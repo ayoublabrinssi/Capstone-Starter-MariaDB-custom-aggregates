@@ -1,0 +1,31 @@
+# Starts MariaDB with the openflights data, installs the functions and runs
+# all tests, on every push and pull request. Same steps as the README quick start.
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      MARIADB_VERSION: "12.3.3"   # the version the README results come from
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start MariaDB with the openflights data
+        run: |
+          git clone --depth 1 https://github.com/mariadb/openflights.git ../openflights
+          cd ../openflights
+          docker compose up --wait
+
+      - name: Install the functions
+        run: ./install.sh
+
+      - name: Run the tests
+        run: ./test.sh
+
+      - name: Run experiment 10 (sql_mode and the catalog)
+        run: ./db.sh -t < experiments/10_oracle_mode.sql
