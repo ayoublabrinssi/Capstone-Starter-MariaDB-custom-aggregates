@@ -1,0 +1,138 @@
+ERROR 1064 (42000) at line 6: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OVER (PARTITION BY country) AS m
+FROM served_airports LIMIT 3' at line 2
+ERROR 1064 (42000) at line 11: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'DISTINCT routes) AS m FROM served_airports' at line 1
+ERROR 1054 (42S22) at line 18: Unknown column 'routes' in 'HAVING'
+ERROR 1366 (22007) at line 30: Incorrect double value: 'Al Massira Airport' for column ``.``.`x` at row 1
+--------------
+SELECT country, routes,
+       median_agg(routes) OVER (PARTITION BY country) AS m
+FROM served_airports LIMIT 3
+--------------
+
+--------------
+SELECT median_agg(DISTINCT routes) AS m FROM served_airports
+--------------
+
+--------------
+SELECT country, median_agg(routes) AS m, gini(routes) AS g
+FROM served_airports GROUP BY country ORDER BY COUNT(*) DESC LIMIT 3
+--------------
+
++---------------+------+--------------------+
+| country       | m    | g                  |
++---------------+------+--------------------+
+| United States |    3 | 0.8153623872310896 |
+| Canada        |    3 | 0.7027224393729248 |
+| China         |   10 | 0.7169755806390761 |
++---------------+------+--------------------+
+--------------
+SELECT country, COUNT(*) AS airports, ROUND(gini(routes), 3) AS g
+FROM served_airports GROUP BY country
+HAVING gini(routes) > 0.8 ORDER BY gini(routes) DESC
+--------------
+
+--------------
+SELECT country, median_agg(routes) AS m
+FROM served_airports WHERE country IN ('Morocco', 'Germany') GROUP BY country WITH ROLLUP
+--------------
+
++---------+------+
+| country | m    |
++---------+------+
+| Germany | 22.5 |
+| Morocco |   11 |
+| NULL    |   18 |
++---------+------+
+--------------
+SELECT median_agg(routes) AS m, gini(routes) AS g FROM served_airports WHERE 1 = 0
+--------------
+
++------+------+
+| m    | g    |
++------+------+
+| NULL | NULL |
++------+------+
+--------------
+SELECT median_agg(name) AS m FROM served_airports WHERE country = 'Morocco'
+--------------
+
+--------------
+SELECT ROUTINE_NAME, IS_DETERMINISTIC, SQL_DATA_ACCESS, ROUTINE_TYPE
+FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = 'flightdb2'
+--------------
+
++------------------------+------------------+-----------------+--------------+
+| ROUTINE_NAME           | IS_DETERMINISTIC | SQL_DATA_ACCESS | ROUTINE_TYPE |
++------------------------+------------------+-----------------+--------------+
+| gini                   | NO               | CONTAINS SQL    | FUNCTION     |
+| median_agg             | NO               | CONTAINS SQL    | FUNCTION     |
+| median_json            | NO               | CONTAINS SQL    | FUNCTION     |
+| median_str             | NO               | CONTAINS SQL    | FUNCTION     |
+| medi_int               | NO               | CONTAINS SQL    | FUNCTION     |
+| mode_agg               | NO               | CONTAINS SQL    | FUNCTION     |
+| run_before_after_bench | NO               | CONTAINS SQL    | PROCEDURE    |
+| run_bench              | NO               | CONTAINS SQL    | PROCEDURE    |
+| run_mode_bench         | NO               | CONTAINS SQL    | PROCEDURE    |
+| wpercentile            | NO               | CONTAINS SQL    | FUNCTION     |
++------------------------+------------------+-----------------+--------------+
+--------------
+SELECT country, AVG(routes) AS a FROM served_airports GROUP BY country
+HAVING AVG(routes) > 100
+--------------
+
++-------------+----------+
+| country     | a        |
++-------------+----------+
+| Hong Kong   | 355.0000 |
+| Kuwait      | 120.0000 |
+| Latvia      | 101.0000 |
+| Malta       | 113.0000 |
+| Netherlands | 114.0000 |
+| Qatar       | 189.0000 |
+| Singapore   | 408.0000 |
++-------------+----------+
+--------------
+SELECT country, ROUND(gini(routes), 3) AS g FROM served_airports GROUP BY country
+HAVING g > 0.8 ORDER BY g DESC
+--------------
+
++---------------+-------+
+| country       | g     |
++---------------+-------+
+| Thailand      | 0.837 |
+| United States | 0.815 |
+| Turkey        | 0.802 |
++---------------+-------+
+--------------
+SELECT country, ROUND(gini(routes), 3) AS g FROM served_airports GROUP BY country
+ORDER BY gini(routes) DESC LIMIT 3
+--------------
+
++---------------+-------+
+| country       | g     |
++---------------+-------+
+| Thailand      | 0.837 |
+| United States | 0.815 |
+| Turkey        | 0.802 |
++---------------+-------+
+--------------
+SELECT * FROM (SELECT country, gini(routes) AS g FROM served_airports GROUP BY country) AS t
+WHERE g > 0.8
+--------------
+
++---------------+--------------------+
+| country       | g                  |
++---------------+--------------------+
+| Thailand      | 0.8372417355371902 |
+| Turkey        | 0.8020756468543953 |
+| United States | 0.8153623872310896 |
++---------------+--------------------+
+--------------
+SELECT median_agg(r) AS m FROM (SELECT DISTINCT routes AS r FROM served_airports) AS d
+--------------
+
++------+
+| m    |
++------+
+|  113 |
++------+
