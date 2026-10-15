@@ -2,9 +2,8 @@
 # Runs the edge-case tests and the 4 check queries. Run ./install.sh first.
 # Prints one line per test. A failing test shows what it got and expected.
 # Exits with 1 if anything fails.
-DBPW="${DBPW:-flightpw}"
-CONTAINER="${CONTAINER:-openflights-mariadb}"
-db() { docker exec -i "$CONTAINER" mariadb -uroot -p"$DBPW" flightdb2 -N; }
+cd "$(dirname "$0")"
+db() { ./db.sh -N; }
 
 # 1. Edge cases: one row per test, columns: test, got, expected, pass (1 or 0).
 results=$(db < tests/tests.sql) || exit 1

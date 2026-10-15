@@ -5,7 +5,7 @@
 -- median_agg (sql/02_median_agg.sql), which keeps a plain text list and parses
 -- it as JSON only once, at the end of the group.
 -- Run:
---   docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 -t -v < experiments/05_faster_median.sql
+--   ./db.sh -t -v < experiments/05_faster_median.sql
 
 DELIMITER //
 CREATE OR REPLACE AGGREGATE FUNCTION median_json(x DOUBLE) RETURNS DOUBLE

@@ -1,7 +1,7 @@
 -- Experiment 6: top airline per country (67,663 routes, 225 countries),
 -- mode_agg vs the hand-written ROW_NUMBER() query, 10 runs each.
 -- Run:
---   docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 -t < experiments/06_mode_timing.sql
+--   ./db.sh -t < experiments/06_mode_timing.sql
 
 CREATE TABLE IF NOT EXISTS mode_bench (method VARCHAR(20), run INT, ms DOUBLE);
 TRUNCATE mode_bench;
