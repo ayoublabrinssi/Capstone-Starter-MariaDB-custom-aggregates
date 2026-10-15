@@ -4,7 +4,7 @@
 --   large: the same weighted median, but one input row per route
 --          (67,663 rows, 225 groups, biggest group 13,056 rows), each row weight 1
 -- Run:
---   docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 -t < experiments/07_wpercentile_timing.sql
+--   ./db.sh -t < experiments/07_wpercentile_timing.sql
 
 CREATE TABLE IF NOT EXISTS wpct_bench (workload VARCHAR(10), method VARCHAR(30), run INT, ms DOUBLE);
 TRUNCATE wpct_bench;

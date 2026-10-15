@@ -6,7 +6,7 @@
 --   1. Load sql/*.sql, experiments/01_docs_median.sql (medi_int) and
 --      experiments/05_faster_median.sql (median_json).
 --   2. Load this file:
---      docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 -t < experiments/04_scale.sql
+--      ./db.sh -t < experiments/04_scale.sql
 --   3. For each size, e.g.: CALL run_bench(1000, 10, TRUE);
 --      TRUE also times median_json, which takes minutes past 10,000 rows.
 --   4. Run the summary query at the end of this file again.
