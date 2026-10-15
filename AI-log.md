@@ -37,6 +37,7 @@ When the code changes, this log is updated so it still matches. New entries go a
 | 10 | 11 Oct | A more professional README that is easy to follow and shows the new code | New README layout: badges, contents, quick start, "How it works" with the current `median_agg` and a flow diagram, tests section, project tree, contributing and credits | Asked for it to be open source friendly. All numbers and findings unchanged. Branch `refactor/clean-code` |
 | 11 | 12-14 Oct | A new aggregate I could add to this repo as my part of the project | `wpercentile` (weighted percentile), before/after/check queries, 14 tests, timing experiment 7, README text, and step-by-step instructions to add each file by hand | Chose the weighted percentile because the README's Contributing section asks for "a percentile or a weighted average". Added every file myself in VS Code. Ran `test.sh` on my laptop (MariaDB 12.3.3): 41 tests and 4 checks pass. Checked the US result myself (3 vs 196). Ran the timing on my own machine and used my numbers in the README. Branch `feat/wpercentile` |
 | 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment` |
+| 13 | 15-16 Oct | Pages to explain the starter, the commands to run it, the MariaDB evaluation prompt run on `main`, then a polish for a better score | Two web pages and the evaluation report (outside the repo). In the repo: `db.sh` so no password is stored here, `run_experiments.sh`, experiments 9 and 10, a GitHub Actions workflow, README fixes | Read the report (33/40) and asked for the polish before the supervisor submits the project. Branch `polish/after-evaluation` |
 
 ## Prompts
 
@@ -220,6 +221,34 @@ What I did and checked myself:
 - Merged PR #4 on GitHub.
 - Gave my hours, my plan for next week and the notes, and corrected the draft where it was wrong.
 - Chose to keep the self-assessment in the repo, next to this log.
+
+### 13. Evaluation and polish
+
+- Date: 2026-10-15 and 2026-10-16 (Morocco)
+- Input: this repository, and the evaluation prompt from the MariaDB project page (last updated 2026-09-04)
+
+> Now the md file of the Capstone starter... no, a proper page to explain to me first what we have done, and another to present to the teacher.
+>
+> Command to run the project.
+>
+> Run this on the project: (the MariaDB evaluation prompt)
+>
+> The Capstone project was good. I am waiting until Monday to ask the teacher to submit it to MariaDB. We should polish it more to get a better score.
+
+Output:
+- Two web pages, one that explains the starter to me and one to present to the supervisor (outside the repo).
+- The commands to start the database and run the tests.
+- The evaluation report on `main` at commit 68041e4: 33/40, with what cost points (outside the repo).
+- This polish:
+  - `db.sh`, which reads the database password inside the container, so no password is stored in the repo. `install.sh`, `test.sh` and the experiment headers use it.
+  - `run_experiments.sh`, which runs every experiment again into a folder of your choice.
+  - Experiment 9: length and time of every before/after pair. Experiment 10: the Oracle syntax, `sql_mode`, and how the server lists aggregates.
+  - A GitHub Actions workflow that runs the tests on every push, with MariaDB 12.3.3.
+  - README fixes: the "built-in is always faster" line that experiment 8 contradicted, Shreyash's credit for experiment 8, a Team section, and how to install the functions in your own database.
+
+What I did and checked myself:
+- Read the evaluation report and asked for the polish.
+- Chose to wait until Monday before asking the supervisor to submit the project.
 
 ## Adding a new entry
 
