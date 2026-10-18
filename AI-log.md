@@ -38,6 +38,7 @@ When the code changes, this log is updated so it still matches. New entries go a
 | 11 | 12-14 Oct | A new aggregate I could add to this repo as my part of the project | `wpercentile` (weighted percentile), before/after/check queries, 14 tests, timing experiment 7, README text, and step-by-step instructions to add each file by hand | Chose the weighted percentile because the README's Contributing section asks for "a percentile or a weighted average". Added every file myself in VS Code. Ran `test.sh` on my laptop (MariaDB 12.3.3): 41 tests and 4 checks pass. Checked the US result myself (3 vs 196). Ran the timing on my own machine and used my numbers in the README. Branch `feat/wpercentile` |
 | 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment` |
 | 13 | 15-16 Oct | Pages to explain the starter, the commands to run it, the MariaDB evaluation prompt run on `main`, then a polish for a better score | Two web pages and the evaluation report (outside the repo). In the repo: `db.sh` so no password is stored here, `run_experiments.sh`, experiments 9 and 10, a GitHub Actions workflow, README fixes | Read the report (33/40) and asked for the polish before the supervisor submits the project. Branch `polish/after-evaluation` |
+| 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation` |
 
 ## Prompts
 
@@ -251,6 +252,27 @@ Output:
 What I did and checked myself:
 - Read the evaluation report and asked for the polish.
 - Chose to wait until Monday before asking the supervisor to submit the project.
+
+### 14. Teammate's PR and the last fixes
+
+- Date: 2026-10-18 (Morocco)
+- Input: this repository, PR #6, and the evaluation prompt from the MariaDB project page (last updated 2026-09-04)
+
+> Go now for the Capstone project, check Hadiya's work. (with Shreyash's message about PR #6)
+>
+> Before that, what can we do to make it score more? (with the summary of the 15 Oct evaluation)
+
+Output:
+- A check of PR #6. It wrote the "Shreyash Hadiya" heading twice in `SELF-ASSESSMENT.md`; one is removed on this branch, which now sits on top of main after PR #6.
+- A draft email asking the supervisor to submit the project (outside the repo).
+- The evaluation prompt run again on this branch: 36/40 (outside the repo). It found that the functions did not install on a server with binary logging (`ERROR 1418`).
+- In the repo:
+  - `DETERMINISTIC` on the four functions, experiment 11 (`experiments/11_binary_log.sh`) that shows the errors and the fix, a CI step that runs it, and notes in the README.
+  - Experiment 4 builds its table from `seq_1_to_100000` cut to n rows, instead of SQL built as text. Same data.
+
+What I did and checked myself:
+- Merged PR #6.
+- Chose to add both fixes before merging the polish branch.
 
 ## Adding a new entry
 
