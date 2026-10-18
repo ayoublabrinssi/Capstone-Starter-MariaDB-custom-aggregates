@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check the shell scripts
+        run: shellcheck scripts/*.sh experiments/*.sh
+
       - name: Start MariaDB with the openflights data
         run: |
           git clone --depth 1 https://github.com/mariadb/openflights.git ../openflights
