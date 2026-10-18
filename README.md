@@ -62,22 +62,22 @@ All four skip NULLs and return NULL for an empty group, like `AVG()`.
 2. From this repo's folder, install the view and the four functions, then run the tests:
 
    ```sh
-   ./install.sh
-   ./test.sh
+   scripts/install.sh
+   scripts/test.sh
    ```
 
 3. Run a query, or open a prompt and type your own:
 
    ```sh
-   ./db.sh < queries/median_after.sql
-   ./db.sh
+   scripts/db.sh < queries/median/after.sql
+   scripts/db.sh
    ```
 
-`db.sh` runs the mariadb client inside the openflights container and reads the root password there, from the container's `MARIADB_ROOT_PASSWORD`. So no password is written in this repo. `install.sh`, `test.sh` and `run_experiments.sh` all go through it.
+`scripts/db.sh` runs the mariadb client inside the openflights container and reads the root password there, from the container's `MARIADB_ROOT_PASSWORD`. So no password is written in this repo. The other scripts in `scripts/` all go through it.
 
 ## Use them on your own table
 
-After `./install.sh` the functions work on any table in `flightdb2`:
+After `scripts/install.sh` the functions work on any table in `flightdb2`:
 
 ```sql
 CREATE TABLE grades (course VARCHAR(20), student VARCHAR(20), grade DOUBLE, letter CHAR(1));
@@ -230,10 +230,10 @@ Each function comes with the query you would write without it, the query with it
 
 | Question | Without the custom aggregate | With it | Check (0 rows = same answer for every country) |
 |---|---|---|---|
-| Median routes per airport, per country | [median_before.sql](queries/median_before.sql) | [median_after.sql](queries/median_after.sql) | [median_check.sql](queries/median_check.sql) |
-| Gini of routes per airport, per country | [gini_before.sql](queries/gini_before.sql) | [gini_after.sql](queries/gini_after.sql) | [gini_check.sql](queries/gini_check.sql) |
-| Top airline per country | [mode_before.sql](queries/mode_before.sql) | [mode_after.sql](queries/mode_after.sql) | [mode_check.sql](queries/mode_check.sql) |
-| Route-weighted median airport size, per country | [wpercentile_before.sql](queries/wpercentile_before.sql) | [wpercentile_after.sql](queries/wpercentile_after.sql) | [wpercentile_check.sql](queries/wpercentile_check.sql) (at p = 0.1, 0.5 and 0.9) |
+| Median routes per airport, per country | [median/before.sql](queries/median/before.sql) | [median/after.sql](queries/median/after.sql) | [median/check.sql](queries/median/check.sql) |
+| Gini of routes per airport, per country | [gini/before.sql](queries/gini/before.sql) | [gini/after.sql](queries/gini/after.sql) | [gini/check.sql](queries/gini/check.sql) |
+| Top airline per country | [mode/before.sql](queries/mode/before.sql) | [mode/after.sql](queries/mode/after.sql) | [mode/check.sql](queries/mode/check.sql) |
+| Route-weighted median airport size, per country | [wpercentile/before.sql](queries/wpercentile/before.sql) | [wpercentile/after.sql](queries/wpercentile/after.sql) | [wpercentile/check.sql](queries/wpercentile/check.sql) (at p = 0.1, 0.5 and 0.9) |
 
 For example, the top airline per country (shortened from the files) without `mode_agg` needs a count, a rank and a filter:
 
@@ -321,19 +321,19 @@ The clash is a known server issue: [MDEV-17246](https://jira.mariadb.org/browse/
 ## Tests
 
 ```sh
-./test.sh
+scripts/test.sh
 ```
 
-[tests/tests.sql](tests/tests.sql) has 41 edge-case tests: odd and even counts, NULLs, negatives, decimals, empty groups, Gini of equal values, ties, text with commas and quotes, Arabic text, a `ROLLUP` total, and for `wpercentile` zero and negative weights, `p` at 0, 1 and out of range. `test.sh` also runs the 4 check queries on the whole data set. It prints one line per test, shows what a failing test got and expected, and exits with 1 if anything fails. The same steps run on GitHub Actions with MariaDB 12.3.3 on every push and pull request ([.github/workflows/tests.yml](.github/workflows/tests.yml)):
+[tests/edge_cases.sql](tests/edge_cases.sql) has 41 edge-case tests: odd and even counts, NULLs, negatives, decimals, empty groups, Gini of equal values, ties, text with commas and quotes, Arabic text, a `ROLLUP` total, and for `wpercentile` zero and negative weights, `p` at 0, 1 and out of range. `scripts/test.sh` also runs the 4 check queries on the whole data set. It prints one line per test, shows what a failing test got and expected, and exits with 1 if anything fails. The same steps run on GitHub Actions with MariaDB 12.3.3 on every push and pull request ([.github/workflows/tests.yml](.github/workflows/tests.yml)):
 ```text
 ok    median: odd count
 ok    median: even count
 ...
 ok    mode: top airline, Morocco
-ok    queries/median_check.sql
-ok    queries/gini_check.sql
-ok    queries/mode_check.sql
-ok    queries/wpercentile_check.sql
+ok    queries/median/check.sql
+ok    queries/gini/check.sql
+ok    queries/mode/check.sql
+ok    queries/wpercentile/check.sql
 All tests passed.
 ```
 
@@ -374,7 +374,7 @@ One timing run first came out negative (the VM clock was corrected while it ran)
 ## Run the experiments again
 
 ```sh
-./run_experiments.sh my-run
+scripts/run_experiments.sh my-run
 ```
 
 This runs all 11 experiments and saves their output in `my-run/`, next to `results/`, so you can compare. It takes about 10 minutes. Without a folder name it overwrites `results/`. Times change from machine to machine, so compare the ratios: for example `median_agg` against the old JSON version, or `mode_agg` against the `ROW_NUMBER()` query.
@@ -404,18 +404,14 @@ Use one when there is no built-in (like Gini), when the formula is easy to get w
 
 ```text
 .
-├── sql/            the view and the four functions (installed by install.sh)
-├── queries/        before / after / check queries and the chart data
-├── tests/          edge-case tests (run by test.sh)
+├── sql/            the view and the four functions (installed by scripts/install.sh)
+├── queries/        one folder per function with before.sql, after.sql and check.sql, plus the chart data
+├── tests/          edge-case tests (run by scripts/test.sh)
 ├── experiments/    the experiments behind "Past the docs" and "Speed"
 ├── results/        the saved output of each experiment
+├── scripts/        db.sh opens the mariadb client; install.sh, test.sh and run_experiments.sh use it
+├── docs/           AI-log.md, every AI use and its prompt; SELF-ASSESSMENT.md, what each of us did, week by week
 ├── .github/        issue and PR templates, and the workflow that runs the tests
-├── db.sh           opens the mariadb client in the openflights container
-├── install.sh      installs the view and the functions
-├── test.sh         runs the tests and the checks
-├── run_experiments.sh  runs every experiment again
-├── AI-log.md       every AI use and its prompt
-├── SELF-ASSESSMENT.md what each of us did, week by week
 ├── CONTRIBUTING.md how to report a bug, suggest a feature or add a function
 └── CODE_OF_CONDUCT.md
 ```
@@ -425,7 +421,7 @@ Use one when there is no built-in (like Gini), when the formula is easy to get w
 Contributions are welcome, small ones too. Good places to start:
 
 - a new aggregate, for example a percentile or a weighted average,
-- more edge cases in [tests/tests.sql](tests/tests.sql),
+- more edge cases in [tests/edge_cases.sql](tests/edge_cases.sql),
 - results on other MariaDB versions,
 - fixes to this README.
 
@@ -440,7 +436,7 @@ Team IV, Capstone Project I (CAP-01), Constructor University, fall 2026.
 | Ayoub Labrinssi | [@ayoublabrinssi](https://github.com/ayoublabrinssi) | `median_agg`, `gini`, `mode_agg`, setup and scripts, experiments 1 to 6 and 9 to 11, README |
 | Shreyash Hadiya | [@Shreyashahir](https://github.com/Shreyashahir) | `wpercentile`, its 14 tests, experiments 7 and 8 |
 
-Every change went through a branch and a pull request. Who did what each week is in [SELF-ASSESSMENT.md](SELF-ASSESSMENT.md), and every AI use is in [AI-log.md](AI-log.md).
+Every change went through a branch and a pull request. Who did what each week is in [docs/SELF-ASSESSMENT.md](docs/SELF-ASSESSMENT.md), and every AI use is in [docs/AI-log.md](docs/AI-log.md).
 
 ## License and credits
 

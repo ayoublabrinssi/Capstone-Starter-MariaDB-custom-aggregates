@@ -36,9 +36,9 @@ When the code changes, this log is updated so it still matches. New entries go a
 | 9 | 11 Oct | Clean, easy-to-read code, and a repo that follows opensource.guide | Shorter functions and comments, clearer `test.sh` output, tidier experiment headers, code of conduct, issue and PR templates, fuller CONTRIBUTING | Chose opensource.guide as the standard. Same results: 27 tests and 3 checks pass, same speed. Branch `refactor/clean-code` |
 | 10 | 11 Oct | A more professional README that is easy to follow and shows the new code | New README layout: badges, contents, quick start, "How it works" with the current `median_agg` and a flow diagram, tests section, project tree, contributing and credits | Asked for it to be open source friendly. All numbers and findings unchanged. Branch `refactor/clean-code` |
 | 11 | 12-14 Oct | A new aggregate I could add to this repo as my part of the project | `wpercentile` (weighted percentile), before/after/check queries, 14 tests, timing experiment 7, README text, and step-by-step instructions to add each file by hand | Chose the weighted percentile because the README's Contributing section asks for "a percentile or a weighted average". Added every file myself in VS Code. Ran `test.sh` on my laptop (MariaDB 12.3.3): 41 tests and 4 checks pass. Checked the US result myself (3 vs 196). Ran the timing on my own machine and used my numbers in the README. Branch `feat/wpercentile` |
-| 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment` |
+| 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `docs/SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment` |
 | 13 | 15-16 Oct | Pages to explain the starter, the commands to run it, the MariaDB evaluation prompt run on `main`, then a polish for a better score | Two web pages and the evaluation report (outside the repo). In the repo: `db.sh` so no password is stored here, `run_experiments.sh`, experiments 9 and 10, a GitHub Actions workflow, README fixes | Read the report (33/40) and asked for the polish before the supervisor submits the project. Branch `polish/after-evaluation` |
-| 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation` |
+| 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `docs/SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation` |
 
 ## Prompts
 
@@ -62,7 +62,7 @@ Output:
 Output:
 - `sql/01_served_airports.sql`: view with routes per served airport.
 - `sql/02_median_agg.sql`: `median_agg` with `CREATE AGGREGATE FUNCTION`.
-- `queries/median_before.sql`, `queries/median_after.sql`, `queries/median_check.sql`.
+- `queries/median/before.sql`, `queries/median/after.sql`, `queries/median/check.sql`.
 - First draft of `README.md`.
 - Test run: `median_check.sql` returned 0 rows (custom = built-in for all countries). Edge cases: (1, 3, 2, 10) gives 2.5, (5, NULL, 1) gives 3, (NULL) gives NULL.
 
@@ -84,7 +84,7 @@ Output:
 
 Output:
 - `sql/03_gini.sql`: `gini` with `CREATE AGGREGATE FUNCTION`.
-- `queries/gini_before.sql`, `queries/gini_after.sql`, `queries/gini_check.sql`.
+- `queries/gini/before.sql`, `queries/gini/after.sql`, `queries/gini/check.sql`.
 - README: Gini finding, chart 4, before/after row, "A trap found on the way".
 - Tests: `gini_check.sql` returned 0 rows. Edge cases: (1, 1, 1) gives 0, (0, 0, 0, 10) gives 0.75, (NULL) gives NULL, (0) gives NULL, (5) gives 0.
 
@@ -106,7 +106,7 @@ Output:
 - `experiments/05_faster_median.sql`: the first JSON version kept as `median_json`.
 - `results/`: the output of each experiment.
 - `sql/02_median_agg.sql`, `sql/03_gini.sql`: a text list instead of `JSON_ARRAY_APPEND` (same results, faster).
-- `tests/tests.sql`, `test.sh`, `install.sh`.
+- `tests/edge_cases.sql`, `test.sh`, `install.sh`.
 - README: "Limits found", "Speed", "When not to use a custom aggregate".
 - JIRA issues found by searching jira.mariadb.org for each limit.
 
@@ -122,8 +122,8 @@ Output:
 
 Output:
 - `sql/04_mode_agg.sql`: `mode_agg`, the most common value, works on text. Ties go to the smallest value.
-- `queries/mode_before.sql`, `queries/mode_after.sql`, `queries/mode_check.sql` (0 rows: same airline for all 225 countries).
-- `tests/tests.sql`: 10 mode tests (ties, commas and quotes, Arabic text, case, NULL, empty).
+- `queries/mode/before.sql`, `queries/mode/after.sql`, `queries/mode/check.sql` (0 rows: same airline for all 225 countries).
+- `tests/edge_cases.sql`: 10 mode tests (ties, commas and quotes, Arabic text, case, NULL, empty).
 - `experiments/06_mode_timing.sql` and `results/06_mode_timing.txt`: 5.2 s vs 0.44 s for the hand-written query.
 - README: mode finding, before/after row, "Try it on your own table", license section.
 - `LICENSE` (MIT), `CONTRIBUTING.md`.
@@ -165,7 +165,7 @@ Output:
 - `test.sh`: runs the tests once instead of twice, prints one line per test, and shows got and expected for a failing test.
 - `experiments/`: the same Run line format in every file; the summary query in `04_scale.sql` is no longer commented out.
 - From the opensource.guide checklist: `CODE_OF_CONDUCT.md` (Contributor Covenant 2.1), issue templates for bugs and features, a pull request template, a fuller `CONTRIBUTING.md` (what help is wanted, how to suggest a feature, how to run the tests, where to ask), and a status and help section in the README.
-- Checked: `./test.sh` passes (27 tests, 3 checks), `experiments/05` checks give 0 differences, timing at 10,000 rows is the same (about 0.6 s).
+- Checked: `scripts/test.sh` passes (27 tests, 3 checks), `experiments/05` checks give 0 differences, timing at 10,000 rows is the same (about 0.6 s).
 
 ### 10. README for open source
 
@@ -188,8 +188,8 @@ Output:
 
 Output:
 - `sql/05_wpercentile.sql`: `wpercentile(x, w, p)` with `CREATE AGGREGATE FUNCTION`. Collects `[value, weight]` pairs, then returns the first value where the running total of weights reaches `p` times the sum.
-- `queries/wpercentile_before.sql`, `queries/wpercentile_after.sql`, `queries/wpercentile_check.sql` (checked at p = 0.1, 0.5 and 0.9).
-- `tests/tests.sql`: 14 tests (weights of 1, a heavy row, p = 0 and 1, zero, negative and NULL weights, p out of range, empty group, 1,999 random rows against `MEDIAN()`, the US result).
+- `queries/wpercentile/before.sql`, `queries/wpercentile/after.sql`, `queries/wpercentile/check.sql` (checked at p = 0.1, 0.5 and 0.9).
+- `tests/edge_cases.sql`: 14 tests (weights of 1, a heavy row, p = 0 and 1, zero, negative and NULL weights, p out of range, empty group, 1,999 random rows against `MEDIAN()`, the US result).
 - `experiments/07_wpercentile_timing.sql`: 10-run timing against the window-function query.
 - `test.sh`, `install.sh`: the new check and function added.
 - README: function row, "How it works" line, finding, before/after row, test counts, speed bullet, credits.
@@ -198,7 +198,7 @@ Output:
 
 What I did and checked myself:
 - Typed or pasted each file into VS Code and committed in steps on my own branch.
-- `./test.sh`: all 41 tests and 4 checks pass on MariaDB 12.3.3 (Docker Desktop, Windows).
+- `scripts/test.sh`: all 41 tests and 4 checks pass on MariaDB 12.3.3 (Docker Desktop, Windows).
 - Ran `wpercentile_after.sql`: the median US airport has 3 routes, but half of US routes leave from airports with 196 routes or more.
 - Ran experiment 7 on my laptop (Ryzen 5 5500U, 8 GB RAM): 236 ms vs 192 ms on small groups, 1.7 s vs 0.82 s on large groups, 0 mismatches. Saved in `results/07_wpercentile_timing.txt`.
 - Ran experiment 8 on my laptop: 211 vs 247 ms (small), 1.7 vs 1.8 s (large), 0 mismatches.
@@ -218,7 +218,7 @@ Output:
 - A summary of PR #4: what it adds, that it merges cleanly, and two small README fixes for later. The AI read the code but did not run the tests.
 - A draft email to the supervisor (outside the repo).
 - The meeting talk updated with `wpercentile`, Shreyash's part and a list of GitHub issues to open (outside the repo).
-- `SELF-ASSESSMENT.md`: the fields from the Team Guide, filled from the git history for the weeks of 5 and 12 October.
+- `docs/SELF-ASSESSMENT.md`: the fields from the Team Guide, filled from the git history for the weeks of 5 and 12 October.
 
 What I did and checked myself:
 - Merged PR #4 on GitHub.
@@ -263,7 +263,7 @@ What I did and checked myself:
 > Before that, what can we do to make it score more? (with the summary of the 15 Oct evaluation)
 
 Output:
-- A check of PR #6. It wrote the "Shreyash Hadiya" heading twice in `SELF-ASSESSMENT.md`; one is removed on this branch, which now sits on top of main after PR #6.
+- A check of PR #6. It wrote the "Shreyash Hadiya" heading twice in `docs/SELF-ASSESSMENT.md`; one is removed on this branch, which now sits on top of main after PR #6.
 - A draft email asking the supervisor to submit the project (outside the repo).
 - The evaluation prompt run again on this branch: 36/40 (outside the repo). It found that the functions did not install on a server with binary logging (`ERROR 1418`).
 - In the repo:

@@ -1,6 +1,6 @@
 -- Edge-case tests for median_agg, gini, mode_agg and wpercentile.
 -- Each row is one test: pass = 1 means the result is what we expect.
--- Run with ./test.sh (it fails if any row has pass = 0).
+-- Run with scripts/test.sh (it fails if any row has pass = 0).
 -- Numbers count as equal when they differ by less than 1e-12 of their size
 -- (two correct DOUBLE averages can differ in the last digit).
 

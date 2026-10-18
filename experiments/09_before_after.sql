@@ -1,11 +1,11 @@
 -- Experiment 9: each function against the query you would write without it,
 -- 10 runs each, all on the same machine and the same data.
--- The queries are the ones in queries/*_before.sql and *_after.sql, without
+-- The queries are the ones in queries/*/before.sql and after.sql, without
 -- the ORDER BY and LIMIT 15 that are only there for display. Every country is
 -- computed, so both sides do the full job.
--- Query length (lines and words) is counted by run_experiments.sh.
+-- Query length (lines and words) is counted by scripts/run_experiments.sh.
 -- Run:
---   ./db.sh -t < experiments/09_before_after.sql
+--   scripts/db.sh -t < experiments/09_before_after.sql
 
 CREATE TABLE IF NOT EXISTS before_after_bench (fn VARCHAR(12), version VARCHAR(30), run INT, ms DOUBLE);
 TRUNCATE before_after_bench;

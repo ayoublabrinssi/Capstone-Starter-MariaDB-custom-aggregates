@@ -12,7 +12,7 @@
 #   4. case 3 again with log_bin_trust_function_creators = 1
 # The passwords are random and stay inside the container.
 #
-# Run: ./experiments/11_binary_log.sh > results/11_binary_log.txt
+# Run: experiments/11_binary_log.sh > results/11_binary_log.txt
 set -e
 cd "$(dirname "$0")/.."
 NAME=mariadb-binlog-test

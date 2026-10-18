@@ -3,11 +3,11 @@
 # The root password is read inside the container from MARIADB_ROOT_PASSWORD,
 # which the openflights compose file sets, so it is not stored in this repo.
 #
-#   ./db.sh                                 interactive prompt
-#   ./db.sh < queries/median_after.sql      run one file
-#   ./db.sh -t < experiments/06_mode_timing.sql    with extra client options
+#   scripts/db.sh                                 interactive prompt
+#   scripts/db.sh < queries/median/after.sql      run one file
+#   scripts/db.sh -t < experiments/06_mode_timing.sql    with extra client options
 #
-# Other container or database: CONTAINER=name DB=name ./db.sh
+# Other container or database: CONTAINER=name DB=name scripts/db.sh
 CONTAINER="${CONTAINER:-openflights-mariadb}"
 DB="${DB:-flightdb2}"
 

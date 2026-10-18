@@ -2,7 +2,7 @@
 -- (Stored Aggregate Functions page), copied as written, next to median_agg.
 -- The docs version keeps the group in a TEMPORARY TABLE called tt.
 -- Run (--force: 1e is expected to fail):
---   ./db.sh --force -t -v < experiments/01_docs_median.sql
+--   scripts/db.sh --force -t -v < experiments/01_docs_median.sql
 
 DELIMITER //
 CREATE OR REPLACE AGGREGATE FUNCTION medi_int(x INT) RETURNS DOUBLE

@@ -3,7 +3,7 @@
 **Issue:** closes #
 
 **Checklist**
-- [ ] `./install.sh` and `./test.sh` pass
-- [ ] New or changed functions have tests in `tests/tests.sql`
+- [ ] `scripts/install.sh` and `scripts/test.sh` pass
+- [ ] New or changed functions have tests in `tests/edge_cases.sql`
 - [ ] README updated if the behavior changed
-- [ ] AI use added to `AI-log.md` (if any)
+- [ ] AI use added to `docs/AI-log.md` (if any)
