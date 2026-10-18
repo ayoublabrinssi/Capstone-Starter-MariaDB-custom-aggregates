@@ -29,17 +29,18 @@ When the code changes, this log is updated so it still matches. New entries go a
 | 2 | 7 Oct | The first working piece, using Colima | `served_airports` view, `median_agg`, before/after/check queries, first README | Chose Colima for the database. The check query gives the same median as MariaDB's `MEDIAN()` for every country |
 | 3 | 7 Oct | Charts in the README that explain the results | Chart query, 3 Mermaid charts, findings text | Kept the charts. Merged in PR #1 |
 | 4 | 10 Oct | More depth, after the supervisor said the work was not enough | `gini` aggregate, hand-written version, check query. Found the INT/INT DECIMAL rounding trap | Added Gini, the second half of my plan. Merged in PR #1 |
-| 5 | 10-11 Oct | Fix the gaps the MariaDB evaluation criteria showed | Experiments against the docs example and SQL features, 10-run timings, faster storage (about 17x at 10,000 rows), tests, `install.sh`, `test.sh` | Merged PR #1 first, then chose to work on depth. Branch `feat/limits` |
-| 6 | 11 Oct | What was still missing before the meeting | `mode_agg` for text, 10 tests, timing, `LICENSE`, `CONTRIBUTING.md` | Approved `mode_agg` and the MIT license. Branch `feat/mode-agg` |
+| 5 | 10-11 Oct | Fix the gaps the MariaDB evaluation criteria showed | Experiments against the docs example and SQL features, 10-run timings, faster storage (about 17x at 10,000 rows), tests, `install.sh`, `test.sh` | Merged PR #1 first, then chose to work on depth. Branch `feat/limits`, PR #3 |
+| 6 | 11 Oct | What was still missing before the meeting | `mode_agg` for text, 10 tests, timing, `LICENSE`, `CONTRIBUTING.md` | Approved `mode_agg` and the MIT license. Branch `feat/mode-agg`, PR #3 |
 | 7 | 11 Oct | Animated material to present the work at the meeting | An animated page in English, an Arabic version for my own study and meeting notes (all outside the repo) | Used them to prepare and rehearse the talk |
 | 8 | 11 Oct | A cleaner AI log in one file | This file, with my decisions in their own column | Checked that every line is true |
-| 9 | 11 Oct | Clean, easy-to-read code, and a repo that follows opensource.guide | Shorter functions and comments, clearer `test.sh` output, tidier experiment headers, code of conduct, issue and PR templates, fuller CONTRIBUTING | Chose opensource.guide as the standard. Same results: 27 tests and 3 checks pass, same speed. Branch `refactor/clean-code` |
-| 10 | 11 Oct | A more professional README that is easy to follow and shows the new code | New README layout: badges, contents, quick start, "How it works" with the current `median_agg` and a flow diagram, tests section, project tree, contributing and credits | Asked for it to be open source friendly. All numbers and findings unchanged. Branch `refactor/clean-code` |
-| 11 | 12-14 Oct | A new aggregate I could add to this repo as my part of the project | `wpercentile` (weighted percentile), before/after/check queries, 14 tests, timing experiment 7, README text, and step-by-step instructions to add each file by hand | Chose the weighted percentile because the README's Contributing section asks for "a percentile or a weighted average". Added every file myself in VS Code. Ran `test.sh` on my laptop (MariaDB 12.3.3): 41 tests and 4 checks pass. Checked the US result myself (3 vs 196). Ran the timing on my own machine and used my numbers in the README. Branch `feat/wpercentile` |
-| 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `docs/SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment` |
-| 13 | 15-16 Oct | Pages to explain the starter, the commands to run it, the MariaDB evaluation prompt run on `main`, then a polish for a better score | Two web pages and the evaluation report (outside the repo). In the repo: `db.sh` so no password is stored here, `run_experiments.sh`, experiments 9 and 10, a GitHub Actions workflow, README fixes | Read the report (33/40) and asked for the polish before the supervisor submits the project. Branch `polish/after-evaluation` |
-| 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `docs/SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation` |
-| 15 | 18 Oct | A more professional, well organized repo that respects clean code | Scripts in `scripts/`, the AI log and self-assessment in `docs/`, one folder per function in `queries/`, `tests/edge_cases.sql`, `.editorconfig` and `.gitattributes` (spaces, LF line endings, final newline), a shellcheck step in CI, every link and command updated | Chose the full reorganization over a small tidy-up. Branch `refactor/repo-layout` |
+| 9 | 11 Oct | Clean, easy-to-read code, and a repo that follows opensource.guide | Shorter functions and comments, clearer `test.sh` output, tidier experiment headers, code of conduct, issue and PR templates, fuller CONTRIBUTING | Chose opensource.guide as the standard. Same results: 27 tests and 3 checks pass, same speed. Branch `refactor/clean-code`, PR #2 |
+| 10 | 11 Oct | A more professional README that is easy to follow and shows the new code | New README layout: badges, contents, quick start, "How it works" with the current `median_agg` and a flow diagram, tests section, project tree, contributing and credits | Asked for it to be open source friendly. All numbers and findings unchanged. Branch `refactor/clean-code`, PR #2 |
+| 11 | 12-14 Oct | A new aggregate I could add to this repo as my part of the project | `wpercentile` (weighted percentile), before/after/check queries, 14 tests, timing experiment 7, README text, and step-by-step instructions to add each file by hand | Chose the weighted percentile because the README's Contributing section asks for "a percentile or a weighted average". Added every file myself in VS Code. Ran `test.sh` on my laptop (MariaDB 12.3.3): 41 tests and 4 checks pass. Checked the US result myself (3 vs 196). Ran the timing on my own machine and used my numbers in the README. Branch `feat/wpercentile`, PR #4 |
+| 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `docs/SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment`, PR #5 |
+| 13 | 15-16 Oct | Pages to explain the starter, the commands to run it, the MariaDB evaluation prompt run on `main`, then a polish for a better score | Two web pages and the evaluation report (outside the repo). In the repo: `db.sh` so no password is stored here, `run_experiments.sh`, experiments 9 and 10, a GitHub Actions workflow, README fixes | Read the report (33/40) and asked for the polish before the supervisor submits the project. Branch `polish/after-evaluation`, PR #7 |
+| 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `docs/SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation`, PR #7 |
+| 15 | 18 Oct | A more professional, well organized repo that respects clean code | Scripts in `scripts/`, the AI log and self-assessment in `docs/`, one folder per function in `queries/`, `tests/edge_cases.sql`, `.editorconfig` and `.gitattributes` (spaces, LF line endings, final newline), a shellcheck step in CI, every link and command updated | Chose the full reorganization over a small tidy-up. Branch `refactor/repo-layout`, PR #8 |
+| 16 | 18 Oct | Everything in one merge and the old branches gone, then a fresh read of the repo and what is left to fix | The 7 merged branches removed on GitHub and locally, my hours and the two-person team in `docs/SELF-ASSESSMENT.md`, PR numbers next to the branch names in this log, a suggested GitHub description and topics | Set my hours for 12 to 18 Oct to 10 and the team to Shreyash and me. Asked for one polish commit merged to main. Set the description and topics on GitHub myself |
 
 ## Prompts
 
@@ -295,6 +296,25 @@ Output:
 
 What I did and checked myself:
 - Chose the full reorganization.
+
+### 16. One branch, hours and the GitHub page
+
+- Date: 2026-10-18 (Morocco)
+- Input: this repository
+
+> Merge all the branches into main, no need for 8 branches.
+
+> Read the repo again. What do you think?
+
+> Update the timing, it is 10 h now. Only me and Hadiya. Fix the GitHub description. Just say polish and merge to main. What do you mean by issues?
+
+Output:
+- A check that every other branch was already in main, then the 7 old branches removed on GitHub and on my Mac.
+- A review of main: ready to submit. Four small things left: the GitHub description was from an older plan, the self-assessment evidence pointed at a deleted branch, no issues yet, and the HAVING error not yet reported to MariaDB JIRA.
+- This commit: hours and team in `docs/SELF-ASSESSMENT.md`, PR numbers in this log. A suggested description and topics for the GitHub page, which only the owner can set.
+
+What I did and checked myself:
+- Set my hours to 10 and the team to Shreyash and me. Asked for one polish commit merged to main. Set the description and topics on GitHub myself.
 
 ## Adding a new entry
 
