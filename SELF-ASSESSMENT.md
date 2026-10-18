@@ -17,7 +17,6 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 - **Notes, blockers:** none.
 
 ### Shreyash Hadiya
-### Shreyash Hadiya
 - **Work done:** added `wpercentile(x, w, p)`, a weighted percentile, with before/after/check queries, 14 tests, changes to `install.sh` and `test.sh`, timing experiments 7 and 8, a README section and AI log entry 11. Set up Docker Desktop and the openflights database on Windows, and ran all tests and timings on my laptop (41 tests and 4 checks pass on MariaDB 12.3.3). Prepared a slide deck about my part for the supervisor meeting.
 - **Hours:** 4
 - **Evidence:** [PR #4 Add wpercentile](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/4), commits c5535d1, 7621e7c, 8ffc288, 20e1476, b8291f9, 0cd7874
