@@ -1,3 +1,5 @@
+-- Machine: Windows laptop, AMD Ryzen 5 5500U (6 cores, 12 threads), 8 GB RAM, Docker Desktop (WSL 2), MariaDB 12.3.3. 10 runs each.
+
 +----------+--------------------------+------+-----------+--------+--------+
 | workload | method                   | runs | median_ms | min_ms | max_ms |
 +----------+--------------------------+------+-----------+--------+--------+

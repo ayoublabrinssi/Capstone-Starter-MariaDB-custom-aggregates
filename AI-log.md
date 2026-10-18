@@ -192,12 +192,14 @@ Output:
 - `test.sh`, `install.sh`: the new check and function added.
 - README: function row, "How it works" line, finding, before/after row, test counts, speed bullet, credits.
 - Help setting up Docker Desktop on Windows, including a line-ending problem (`\r`) that stopped the openflights loading script. Fixed by cloning openflights with `core.autocrlf=false`.
+- `experiments/08_wpercentile_vs_builtin.sql`: timing against the built-in `PERCENTILE_DISC` (same answers with weights = 1), added after my teammate asked for a comparison with a native function.
 
 What I did and checked myself:
 - Typed or pasted each file into VS Code and committed in steps on my own branch.
 - `./test.sh`: all 41 tests and 4 checks pass on MariaDB 12.3.3 (Docker Desktop, Windows).
 - Ran `wpercentile_after.sql`: the median US airport has 3 routes, but half of US routes leave from airports with 196 routes or more.
 - Ran experiment 7 on my laptop (Ryzen 5 5500U, 8 GB RAM): 236 ms vs 192 ms on small groups, 1.7 s vs 0.82 s on large groups, 0 mismatches. Saved in `results/07_wpercentile_timing.txt`.
+- Ran experiment 8 on my laptop: 211 vs 247 ms (small), 1.7 vs 1.8 s (large), 0 mismatches.
 
 ### 12. Teammate's PR, meeting and self-assessment
 

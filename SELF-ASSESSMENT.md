@@ -17,12 +17,13 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 - **Notes, blockers:** none.
 
 ### Shreyash Hadiya
-- **Work done:** added `wpercentile(x, w, p)`, a weighted percentile, with before/after/check queries, 14 tests, changes to `install.sh` and `test.sh`, timing experiments 7 and 8, a README section and AI log entry 11.
-- **Hours:** (Shreyash to fill in)
+### Shreyash Hadiya
+- **Work done:** added `wpercentile(x, w, p)`, a weighted percentile, with before/after/check queries, 14 tests, changes to `install.sh` and `test.sh`, timing experiments 7 and 8, a README section and AI log entry 11. Set up Docker Desktop and the openflights database on Windows, and ran all tests and timings on my laptop (41 tests and 4 checks pass on MariaDB 12.3.3). Prepared a slide deck about my part for the supervisor meeting.
+- **Hours:** 4
 - **Evidence:** [PR #4 Add wpercentile](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/4), commits c5535d1, 7621e7c, 8ffc288, 20e1476, b8291f9, 0cd7874
-- **Plan for next week:** (Shreyash to fill in)
-- **AI tools:** see AI log entry 11. (Shreyash to name the tool)
-- **Notes, blockers:** (Shreyash to fill in)
+- **Plan for next week:** choose the main dish area with the team. Time `wpercentile` across group sizes (100 to 20,000 rows), like experiment 4. Attend the weekly progress meeting.
+- **AI tools:** Claude (Anthropic). It wrote the first versions of the function, queries, tests, experiments and README text, and helped with the Docker setup. I added every file myself, ran all tests and timings on my laptop and used my own numbers. Recorded in AI log entry 11.
+- **Notes, blockers:** the Windows setup took time. The openflights loading script failed because Git changed the line endings, which I fixed by cloning with `core.autocrlf=false`. I had no write access to the repository, so I worked through a fork and PR #4.
 
 ### Mohamed Saad Kchaou
 - **Work done:** no commits in the repo. Has not replied to the team and has not shown up.
@@ -47,7 +48,7 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 
 ### Shreyash Hadiya
 - **Work done:** no commits in the repo this week.
-- **Hours, plan, AI tools, notes:** (Shreyash to fill in)
+- **Hours, plan, AI tools, notes:** no work on the starter this week. I did not attend the progress meetings in weeks 4 and 5 and did not contact the supervisor in time. I joined the starter on 12 October.
 
 ### Mohamed Saad Kchaou
 - **Work done:** no commits in the repo. Has not replied to the team and has not shown up.
