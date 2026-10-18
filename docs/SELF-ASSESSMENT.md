@@ -9,11 +9,11 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 ## Week of 12 to 18 October 2026
 
 ### Ayoub Labrinssi
-- **Work done:** merged Shreyash's PR #4, "Add wpercentile", into main. Prepared the starter presentation for the supervisor meeting. Ran the MariaDB evaluation prompt on main (33/40) and polished the repo for a better score: no password in the repo, experiments 9 to 11, the functions installable on a server with binary logging, a script that reruns all experiments, tests on GitHub Actions, README fixes.
+- **Work done:** merged Shreyash's PR #4, "Add wpercentile", into main. Prepared the starter presentation for the supervisor meeting. Ran the MariaDB evaluation prompt on main (33/40) and polished the repo for a better score: no password in the repo, experiments 9 to 11, the functions installable on a server with binary logging, a script that reruns all experiments, tests on GitHub Actions, README fixes. Reorganized the repository layout (`scripts/`, `docs/`, one folder per function in `queries/`).
 - **Hours:** 5
 - **Evidence:** Shreyash's [PR #4 Add wpercentile](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/4), merge commit 24d809c. Branch `polish/after-evaluation`.
 - **Plan for next week:** open GitHub issues for the starter. Report the `HAVING` error to MariaDB JIRA. Pick the main dish area with the team.
-- **AI tools:** Claude (Anthropic), to check PR #4 and PR #6, prepare the meeting and draft this self-assessment. AI log entries 12 to 14.
+- **AI tools:** Claude (Anthropic), to check PR #4 and PR #6, prepare the meeting and draft this self-assessment. AI log entries 12 to 15.
 - **Notes, blockers:** none.
 
 ### Shreyash Hadiya

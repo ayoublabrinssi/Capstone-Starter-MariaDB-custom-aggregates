@@ -39,6 +39,7 @@ When the code changes, this log is updated so it still matches. New entries go a
 | 12 | 15 Oct | Check my teammate's PR, prepare the meeting and write the weekly self-assessment | Notes on PR #4, a draft email to the supervisor and an updated meeting talk (both outside the repo), and a draft of `docs/SELF-ASSESSMENT.md` | Merged PR #4 myself. Gave my hours, my real plan and the notes, and corrected the draft. Branch `docs/self-assessment` |
 | 13 | 15-16 Oct | Pages to explain the starter, the commands to run it, the MariaDB evaluation prompt run on `main`, then a polish for a better score | Two web pages and the evaluation report (outside the repo). In the repo: `db.sh` so no password is stored here, `run_experiments.sh`, experiments 9 and 10, a GitHub Actions workflow, README fixes | Read the report (33/40) and asked for the polish before the supervisor submits the project. Branch `polish/after-evaluation` |
 | 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `docs/SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation` |
+| 15 | 18 Oct | A more professional, well organized repo that respects clean code | Scripts in `scripts/`, the AI log and self-assessment in `docs/`, one folder per function in `queries/`, `tests/edge_cases.sql`, `.editorconfig` and `.gitattributes` (spaces, LF line endings, final newline), a shellcheck step in CI, every link and command updated | Chose the full reorganization over a small tidy-up. Branch `refactor/repo-layout` |
 
 ## Prompts
 
@@ -273,6 +274,27 @@ Output:
 What I did and checked myself:
 - Merged PR #6.
 - Chose to add both fixes before merging the polish branch.
+
+### 15. Repository layout
+
+- Date: 2026-10-18 (Morocco)
+- Input: this repository
+
+> Can we organize the repo to be more professional, well organized, and respecting clean code?
+
+Output:
+- A check of every file. The layout already followed opensource.guide and the style was the same everywhere. Found: 7 files without a final newline, one shellcheck warning in `test.sh`, and nothing that stops Windows line endings from coming back.
+- Two options, a small tidy-up or a full reorganization. The reorganization:
+  - `scripts/` for `db.sh`, `install.sh`, `test.sh` and `run_experiments.sh`.
+  - `docs/` for `AI-log.md` and `SELF-ASSESSMENT.md`.
+  - One folder per function in `queries/`: `median/before.sql`, `median/after.sql`, `median/check.sql`, and the same for `gini`, `mode` and `wpercentile`.
+  - `tests/tests.sql` renamed to `tests/edge_cases.sql`.
+  - `.editorconfig` and `.gitattributes`, so every file uses spaces, LF line endings and ends with a newline.
+  - `shellcheck` on the scripts in CI, and the warning in `test.sh` fixed.
+  - Every link, command and CI step updated to the new paths.
+
+What I did and checked myself:
+- Chose the full reorganization.
 
 ## Adding a new entry
 
