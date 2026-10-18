@@ -1,8 +1,8 @@
 -- Experiment 10: stored aggregates and sql_mode, and how the server lists them.
 -- The docs page also shows the Oracle-style (SQL/PL) syntax: RETURN instead of
 -- RETURNS, and EXCEPTION WHEN NO_DATA_FOUND instead of a NOT FOUND handler.
--- Run (after ./install.sh):
---   ./db.sh -t -v < experiments/10_oracle_mode.sql
+-- Run (after scripts/install.sh):
+--   scripts/db.sh -t -v < experiments/10_oracle_mode.sql
 
 CREATE OR REPLACE TABLE marks (stud_id INT, grade_count INT);
 INSERT INTO marks VALUES (1, 6), (2, 4), (3, 7), (4, 5), (5, 8);

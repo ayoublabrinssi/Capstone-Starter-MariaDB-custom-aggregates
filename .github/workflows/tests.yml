@@ -15,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check the shell scripts
+        run: shellcheck scripts/*.sh experiments/*.sh
+
       - name: Start MariaDB with the openflights data
         run: |
           git clone --depth 1 https://github.com/mariadb/openflights.git ../openflights
@@ -22,13 +25,13 @@ jobs:
           docker compose up --wait
 
       - name: Install the functions
-        run: ./install.sh
+        run: scripts/install.sh
 
       - name: Run the tests
-        run: ./test.sh
+        run: scripts/test.sh
 
       - name: Run experiment 10 (sql_mode and the catalog)
-        run: ./db.sh -t < experiments/10_oracle_mode.sql
+        run: scripts/db.sh -t < experiments/10_oracle_mode.sql
 
       - name: Run experiment 11 (a server with binary logging)
-        run: ./experiments/11_binary_log.sh
+        run: experiments/11_binary_log.sh

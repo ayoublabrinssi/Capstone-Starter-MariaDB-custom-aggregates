@@ -1,6 +1,6 @@
 -- Experiment 2: what the documentation does not say.
 -- Run (--force: some of these are expected to fail):
---   ./db.sh --force -t -v < experiments/02_limits.sql
+--   scripts/db.sh --force -t -v < experiments/02_limits.sql
 
 -- 2a. As a window function, like the built-in MEDIAN() OVER (...)
 SELECT country, routes,
