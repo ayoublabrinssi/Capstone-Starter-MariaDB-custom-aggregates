@@ -1,6 +1,7 @@
 -- Experiment 4: how the aggregates scale with group size, timed 10 times each.
 -- Data: one group of n rows, values MOD(seq * 7919, 100003), made with the
--- Sequence engine (seq_1_to_n), so every run uses the same numbers.
+-- Sequence engine (the first n rows of seq_1_to_100000), so every run uses
+-- the same numbers.
 --
 -- Run:
 --   1. Load sql/*.sql, experiments/01_docs_median.sql (medi_int) and
@@ -24,9 +25,8 @@ BEGIN
   DECLARE r DOUBLE;
 
   DROP TABLE IF EXISTS bench_data;
-  EXECUTE IMMEDIATE CONCAT(
-    'CREATE TABLE bench_data ENGINE=InnoDB AS ',
-    'SELECT seq AS id, MOD(seq * 7919, 100003) AS v FROM seq_1_to_', p_n);
+  CREATE TABLE bench_data ENGINE=InnoDB AS
+    SELECT seq AS id, MOD(seq * 7919, 100003) AS v FROM seq_1_to_100000 WHERE seq <= p_n;
   DELETE FROM bench_results WHERE n = p_n;
 
   WHILE i <= p_runs DO
