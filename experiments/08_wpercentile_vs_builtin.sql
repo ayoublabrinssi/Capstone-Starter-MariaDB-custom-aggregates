@@ -6,7 +6,7 @@
 --   small: 90th percentile of routes per airport, per country (3,211 rows, biggest group 550)
 --   large: the same, one row per route (67,663 rows, biggest group 13,056)
 -- Run:
---   docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 -t < experiments/08_wpercentile_vs_builtin.sql
+--   ./db.sh -t < experiments/08_wpercentile_vs_builtin.sql
 
 CREATE TABLE IF NOT EXISTS builtin_bench (workload VARCHAR(10), method VARCHAR(30), run INT, ms DOUBLE);
 TRUNCATE builtin_bench;

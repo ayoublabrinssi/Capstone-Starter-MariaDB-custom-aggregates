@@ -1,0 +1,41 @@
+== Server
++----------------------------+---------+---------------+-------------------------+
+| version                    | log_bin | binlog_format | trust_function_creators |
++----------------------------+---------+---------------+-------------------------+
+| 12.3.3-MariaDB-ubu2404-log |       1 | ROW           |                       0 |
++----------------------------+---------+---------------+-------------------------+
+
+== 1. median_agg without DETERMINISTIC, as root
+ERROR 1418 (HY000) at line 15: This function has none of DETERMINISTIC, NO SQL, or READS SQL DATA in its declaration and binary logging is enabled (you *might* want to use the less safe log_bin_trust_function_creators variable)
+
+== 2. The four functions from sql/, as root
++------+---------------+--------------------+-------------+------------------------+
+| g    | median_agg(x) | gini(x)            | mode_agg(s) | wpercentile(x, 1, 0.5) |
++------+---------------+--------------------+-------------+------------------------+
+|    1 |             2 | 0.4615384615384617 | a           |                      2 |
+|    2 |             3 |                  0 | c           |                      3 |
++------+---------------+--------------------+-------------+------------------------+
++-------------+-----------+------------------+
+| name        | aggregate | is_deterministic |
++-------------+-----------+------------------+
+| gini        | GROUP     | YES              |
+| median_agg  | GROUP     | YES              |
+| mode_agg    | GROUP     | YES              |
+| wpercentile | GROUP     | YES              |
++-------------+-----------+------------------+
+
+== 3. The four functions, as a user without SUPER
++-------+-----------+
+| user  | has_super |
++-------+-----------+
+| app@% |         0 |
++-------+-----------+
+ERROR 1419 (HY000) at line 15: You do not have the SUPER privilege and binary logging is enabled (you *might* want to use the less safe log_bin_trust_function_creators variable)
+
+== 4. Case 3 with log_bin_trust_function_creators = 1
++------+---------------+--------------------+-------------+------------------------+
+| g    | median_agg(x) | gini(x)            | mode_agg(s) | wpercentile(x, 1, 0.5) |
++------+---------------+--------------------+-------------+------------------------+
+|    1 |             2 | 0.4615384615384617 | a           |                      2 |
+|    2 |             3 |                  0 | c           |                      3 |
++------+---------------+--------------------+-------------+------------------------+

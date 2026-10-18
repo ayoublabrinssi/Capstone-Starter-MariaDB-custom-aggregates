@@ -1,0 +1,103 @@
+--------------
+CREATE OR REPLACE TABLE marks (stud_id INT, grade_count INT)
+--------------
+
+--------------
+INSERT INTO marks VALUES (1, 6), (2, 4), (3, 7), (4, 5), (5, 8)
+--------------
+
+--------------
+SET sql_mode = ORACLE
+--------------
+
+--------------
+CREATE OR REPLACE AGGREGATE FUNCTION aggregate_count(x INT) RETURN INT AS count_students INT DEFAULT 0;
+BEGIN
+  LOOP
+    FETCH GROUP NEXT ROW;
+    IF x THEN
+      SET count_students := count_students + 1;
+    END IF;
+  END LOOP;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RETURN count_students;
+END aggregate_count
+--------------
+
+--------------
+SELECT aggregate_count(stud_id) AS oracle_style_count FROM marks
+--------------
+
++--------------------+
+| oracle_style_count |
++--------------------+
+|                  5 |
++--------------------+
+--------------
+SELECT median_agg(grade_count) AS median, gini(grade_count) AS gini FROM marks
+--------------
+
++--------+--------------------+
+| median | gini               |
++--------+--------------------+
+|      6 | 0.1333333333333333 |
++--------+--------------------+
+--------------
+SELECT median_agg(v) AS median_with_null FROM (SELECT 5 AS v UNION ALL SELECT NULL UNION ALL SELECT 1) t
+--------------
+
++------------------+
+| median_with_null |
++------------------+
+|                3 |
++------------------+
+--------------
+SET sql_mode = DEFAULT
+--------------
+
+--------------
+SELECT aggregate_count(stud_id) AS oracle_style_count FROM marks
+--------------
+
++--------------------+
+| oracle_style_count |
++--------------------+
+|                  5 |
++--------------------+
+--------------
+SELECT name, aggregate, IF(FIND_IN_SET('ORACLE', sql_mode), 'ORACLE', 'default') AS created_in_mode
+FROM mysql.proc
+WHERE db = DATABASE() AND name IN ('median_agg', 'gini', 'mode_agg', 'wpercentile', 'aggregate_count')
+ORDER BY name
+--------------
+
++-----------------+-----------+-----------------+
+| name            | aggregate | created_in_mode |
++-----------------+-----------+-----------------+
+| aggregate_count | GROUP     | ORACLE          |
+| gini            | GROUP     | default         |
+| median_agg      | GROUP     | default         |
+| mode_agg        | GROUP     | default         |
+| wpercentile     | GROUP     | default         |
++-----------------+-----------+-----------------+
+--------------
+SELECT COUNT(*) AS columns_about_aggregates
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA = 'information_schema' AND TABLE_NAME = 'ROUTINES'
+  AND COLUMN_NAME LIKE '%AGGREGATE%'
+--------------
+
++--------------------------+
+| columns_about_aggregates |
++--------------------------+
+|                        0 |
++--------------------------+
+--------------
+DROP FUNCTION aggregate_count
+--------------
+
+--------------
+DROP TABLE marks
+--------------
+

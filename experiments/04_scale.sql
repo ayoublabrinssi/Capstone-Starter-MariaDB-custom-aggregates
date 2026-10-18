@@ -1,12 +1,13 @@
 -- Experiment 4: how the aggregates scale with group size, timed 10 times each.
 -- Data: one group of n rows, values MOD(seq * 7919, 100003), made with the
--- Sequence engine (seq_1_to_n), so every run uses the same numbers.
+-- Sequence engine (the first n rows of seq_1_to_100000), so every run uses
+-- the same numbers.
 --
 -- Run:
 --   1. Load sql/*.sql, experiments/01_docs_median.sql (medi_int) and
 --      experiments/05_faster_median.sql (median_json).
 --   2. Load this file:
---      docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 -t < experiments/04_scale.sql
+--      ./db.sh -t < experiments/04_scale.sql
 --   3. For each size, e.g.: CALL run_bench(1000, 10, TRUE);
 --      TRUE also times median_json, which takes minutes past 10,000 rows.
 --   4. Run the summary query at the end of this file again.
@@ -24,9 +25,8 @@ BEGIN
   DECLARE r DOUBLE;
 
   DROP TABLE IF EXISTS bench_data;
-  EXECUTE IMMEDIATE CONCAT(
-    'CREATE TABLE bench_data ENGINE=InnoDB AS ',
-    'SELECT seq AS id, MOD(seq * 7919, 100003) AS v FROM seq_1_to_', p_n);
+  CREATE TABLE bench_data ENGINE=InnoDB AS
+    SELECT seq AS id, MOD(seq * 7919, 100003) AS v FROM seq_1_to_100000 WHERE seq <= p_n;
   DELETE FROM bench_results WHERE n = p_n;
 
   WHILE i <= p_runs DO

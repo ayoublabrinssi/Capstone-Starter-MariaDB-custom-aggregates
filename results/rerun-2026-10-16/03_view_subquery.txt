@@ -1,0 +1,82 @@
+--------------
+CREATE OR REPLACE VIEW country_stats AS
+SELECT country, COUNT(*) AS airports, median_agg(routes) AS med, gini(routes) AS g
+FROM served_airports
+GROUP BY country
+--------------
+
+--------------
+SELECT * FROM country_stats WHERE country IN ('Germany', 'Morocco', 'United States')
+--------------
+
++---------------+----------+------+--------------------+
+| country       | airports | med  | g                  |
++---------------+----------+------+--------------------+
+| Germany       |       32 | 22.5 | 0.6871014030612246 |
+| Morocco       |       13 |   11 | 0.6456575682382135 |
+| United States |      550 |    3 | 0.8153623872310896 |
++---------------+----------+------+--------------------+
+--------------
+SELECT country, COUNT(*) AS airports, median_agg(routes) AS med, gini(routes) AS g
+FROM served_airports
+WHERE country IN ('Germany', 'Morocco', 'United States')
+GROUP BY country
+--------------
+
++---------------+----------+------+--------------------+
+| country       | airports | med  | g                  |
++---------------+----------+------+--------------------+
+| Germany       |       32 | 22.5 | 0.6871014030612246 |
+| Morocco       |       13 |   11 | 0.6456575682382135 |
+| United States |      550 |    3 | 0.8153623872310896 |
++---------------+----------+------+--------------------+
+--------------
+SELECT COUNT(*) AS differences
+FROM country_stats v
+JOIN (SELECT country, median_agg(routes) AS med, gini(routes) AS g
+      FROM served_airports GROUP BY country) d USING (country)
+WHERE NOT (v.med <=> d.med) OR ABS(v.g - d.g) > 1e-12
+--------------
+
++-------------+
+| differences |
++-------------+
+|           0 |
++-------------+
+--------------
+SELECT c.name,
+       (SELECT median_agg(s.routes) FROM served_airports s WHERE s.country = c.name) AS med_sub,
+       (SELECT MEDIAN(s.routes) OVER () FROM served_airports s WHERE s.country = c.name LIMIT 1) AS med_builtin
+FROM countries c
+WHERE c.name IN ('Germany', 'Morocco', 'United States', 'France', 'Japan')
+ORDER BY c.name
+--------------
+
++---------------+---------+---------------+
+| name          | med_sub | med_builtin   |
++---------------+---------+---------------+
+| France        |       7 |  7.0000000000 |
+| Germany       |    22.5 | 22.5000000000 |
+| Japan         |       5 |  5.0000000000 |
+| Morocco       |      11 | 11.0000000000 |
+| United States |       3 |  3.0000000000 |
++---------------+---------+---------------+
+--------------
+SELECT COUNT(*) AS differences
+FROM (SELECT c.name,
+             (SELECT median_agg(s.routes) FROM served_airports s WHERE s.country = c.name) AS med_sub
+      FROM countries c) x
+JOIN (SELECT country, median_agg(routes) AS med FROM served_airports GROUP BY country) g
+  ON g.country = x.name
+WHERE NOT (x.med_sub <=> g.med)
+--------------
+
++-------------+
+| differences |
++-------------+
+|           0 |
++-------------+
+--------------
+DROP VIEW country_stats
+--------------
+

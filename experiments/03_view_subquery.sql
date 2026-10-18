@@ -1,7 +1,7 @@
 -- Experiment 3: stored aggregates inside a view and in a correlated subquery.
 -- Linked JIRA issues: MDEV-28475 (views), MDEV-21161 (correlated subquery).
 -- Run:
---   docker exec -i openflights-mariadb mariadb -uroot -p"$DBPW" flightdb2 --force -t -v < experiments/03_view_subquery.sql
+--   ./db.sh --force -t -v < experiments/03_view_subquery.sql
 
 -- 3a. A view whose definition calls median_agg and gini
 CREATE OR REPLACE VIEW country_stats AS

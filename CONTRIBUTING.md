@@ -36,7 +36,7 @@ Follow [Quick start](README.md#quick-start) in the README, then:
 4. Open a pull request that links the issue.
 
 ## Add a new aggregate
-- Put it in `sql/` with the next number, e.g. `sql/05_percentile_agg.sql`.
+- Put it in `sql/` with the next number, e.g. `sql/06_percentile_agg.sql`.
 - Start the file with a comment: what it returns, how NULLs, empty groups and ties are handled.
 - Follow the pattern of the existing functions: collect the values in the loop, compute in the NOT FOUND handler.
 - Add a before/after/check query in `queries/` like the existing ones.

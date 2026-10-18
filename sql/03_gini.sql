@@ -7,10 +7,13 @@
 --   G = 2 * SUM(rank * x) / (n * total) - (n + 1) / n
 --
 -- Same pattern as median_agg: collect the values in a text list, compute at the end.
+--
+-- DETERMINISTIC: the same values always give the same answer. A server with
+-- binary logging refuses a function without it (experiments/11_binary_log.sh).
 
 DELIMITER //
 
-CREATE OR REPLACE AGGREGATE FUNCTION gini(x DOUBLE) RETURNS DOUBLE
+CREATE OR REPLACE AGGREGATE FUNCTION gini(x DOUBLE) RETURNS DOUBLE DETERMINISTIC
 BEGIN
   DECLARE vals LONGTEXT DEFAULT '';  -- the group's values, comma-separated
   DECLARE n INT DEFAULT 0;           -- how many values so far

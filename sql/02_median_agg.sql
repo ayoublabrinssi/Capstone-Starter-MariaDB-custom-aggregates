@@ -6,10 +6,13 @@
 -- The values are kept in a text list ('28,1,18') and read once at the end.
 -- An earlier version used JSON_ARRAY_APPEND per row and was about 17x slower
 -- at 10,000 rows (experiments/05_faster_median.sql).
+--
+-- DETERMINISTIC: the same values always give the same answer. A server with
+-- binary logging refuses a function without it (experiments/11_binary_log.sh).
 
 DELIMITER //
 
-CREATE OR REPLACE AGGREGATE FUNCTION median_agg(x DOUBLE) RETURNS DOUBLE
+CREATE OR REPLACE AGGREGATE FUNCTION median_agg(x DOUBLE) RETURNS DOUBLE DETERMINISTIC
 BEGIN
   DECLARE vals LONGTEXT DEFAULT '';  -- the group's values, comma-separated
   DECLARE n INT DEFAULT 0;           -- how many values so far

@@ -10,10 +10,13 @@
 -- count it returns the lower of the two middle values, not their mean.
 --
 -- Same pattern as median_agg: collect [x,w] pairs in a text list, compute at the end.
+--
+-- DETERMINISTIC: the same values always give the same answer. A server with
+-- binary logging refuses a function without it (experiments/11_binary_log.sh).
 
 DELIMITER //
 
-CREATE OR REPLACE AGGREGATE FUNCTION wpercentile(x DOUBLE, w DOUBLE, p DOUBLE) RETURNS DOUBLE
+CREATE OR REPLACE AGGREGATE FUNCTION wpercentile(x DOUBLE, w DOUBLE, p DOUBLE) RETURNS DOUBLE DETERMINISTIC
 BEGIN
   DECLARE vals LONGTEXT DEFAULT '';  -- the group's pairs, '[x,w],[x,w],...'
   DECLARE n INT DEFAULT 0;           -- how many pairs so far
