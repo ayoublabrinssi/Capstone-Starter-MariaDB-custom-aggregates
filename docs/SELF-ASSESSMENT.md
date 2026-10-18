@@ -2,7 +2,7 @@
 
 Capstone Project I. Starter: custom aggregate functions in MariaDB (area 2).
 Repo: https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates
-Team: Ayoub Labrinssi, Shreyash Hadiya, Mohamed Saad Kchaou
+Team: Ayoub Labrinssi and Shreyash Hadiya
 
 Newest week first. Each contributor fills in their own hours, plan and AI tools.
 
@@ -10,8 +10,8 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 
 ### Ayoub Labrinssi
 - **Work done:** merged Shreyash's PR #4, "Add wpercentile", into main. Prepared the starter presentation for the supervisor meeting. Ran the MariaDB evaluation prompt on main (33/40) and polished the repo for a better score: no password in the repo, experiments 9 to 11, the functions installable on a server with binary logging, a script that reruns all experiments, tests on GitHub Actions, README fixes. Reorganized the repository layout (`scripts/`, `docs/`, one folder per function in `queries/`).
-- **Hours:** 5
-- **Evidence:** Shreyash's [PR #4 Add wpercentile](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/4), merge commit 24d809c. Branch `polish/after-evaluation`.
+- **Hours:** 10
+- **Evidence:** Shreyash's [PR #4 Add wpercentile](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/4), merge commit 24d809c. My own: [PR #5](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/5) self-assessment, [PR #7](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/7) evaluation and polish, [PR #8](https://github.com/ayoublabrinssi/Capstone-Starter-MariaDB-custom-aggregates/pull/8) repository layout.
 - **Plan for next week:** open GitHub issues for the starter. Report the `HAVING` error to MariaDB JIRA. Pick the main dish area with the team.
 - **AI tools:** Claude (Anthropic), to check PR #4 and PR #6, prepare the meeting and draft this self-assessment. AI log entries 12 to 15.
 - **Notes, blockers:** none.
@@ -23,10 +23,6 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 - **Plan for next week:** choose the main dish area with the team. Time `wpercentile` across group sizes (100 to 20,000 rows), like experiment 4. Attend the weekly progress meeting.
 - **AI tools:** Claude (Anthropic). It wrote the first versions of the function, queries, tests, experiments and README text, and helped with the Docker setup. I added every file myself, ran all tests and timings on my laptop and used my own numbers. Recorded in AI log entry 11.
 - **Notes, blockers:** the Windows setup took time. The openflights loading script failed because Git changed the line endings, which I fixed by cloning with `core.autocrlf=false`. I had no write access to the repository, so I worked through a fork and PR #4.
-
-### Mohamed Saad Kchaou
-- **Work done:** no commits in the repo. Has not replied to the team and has not shown up.
-- **Hours, plan, AI tools:** not known.
 
 ## Week of 5 to 11 October 2026
 
@@ -48,7 +44,3 @@ Newest week first. Each contributor fills in their own hours, plan and AI tools.
 ### Shreyash Hadiya
 - **Work done:** no commits in the repo this week.
 - **Hours, plan, AI tools, notes:** no work on the starter this week. I did not attend the progress meetings in weeks 4 and 5 and did not contact the supervisor in time. I joined the starter on 12 October.
-
-### Mohamed Saad Kchaou
-- **Work done:** no commits in the repo. Has not replied to the team and has not shown up.
-- **Hours, plan, AI tools:** not known.

@@ -436,7 +436,7 @@ Team IV, Capstone Project I (CAP-01), Constructor University, fall 2026.
 | Ayoub Labrinssi | [@ayoublabrinssi](https://github.com/ayoublabrinssi) | `median_agg`, `gini`, `mode_agg`, setup and scripts, experiments 1 to 6 and 9 to 11, README |
 | Shreyash Hadiya | [@Shreyashahir](https://github.com/Shreyashahir) | `wpercentile`, its 14 tests, experiments 7 and 8 |
 
-Every change went through a branch and a pull request. Who did what each week is in [docs/SELF-ASSESSMENT.md](docs/SELF-ASSESSMENT.md), and every AI use is in [docs/AI-log.md](docs/AI-log.md).
+Every change went through a branch and, except for small documentation fixes, a pull request. Who did what each week is in [docs/SELF-ASSESSMENT.md](docs/SELF-ASSESSMENT.md), and every AI use is in [docs/AI-log.md](docs/AI-log.md).
 
 ## License and credits
 
