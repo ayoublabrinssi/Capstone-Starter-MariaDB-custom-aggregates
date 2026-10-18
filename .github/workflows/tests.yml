@@ -29,3 +29,6 @@ jobs:
 
       - name: Run experiment 10 (sql_mode and the catalog)
         run: ./db.sh -t < experiments/10_oracle_mode.sql
+
+      - name: Run experiment 11 (a server with binary logging)
+        run: ./experiments/11_binary_log.sh

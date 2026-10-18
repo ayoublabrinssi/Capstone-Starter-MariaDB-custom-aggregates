@@ -37,6 +37,10 @@ run 08_wpercentile_vs_builtin -t
 run 09_before_after -t
 run 10_oracle_mode -t -v
 
+# Experiment 11 starts its own server, with binary logging on.
+echo "experiment 11_binary_log"
+./experiments/11_binary_log.sh > "$OUT/11_binary_log.txt" 2>&1 || true
+
 # Query length, before and after: SQL lines and words, comments and blank lines left out.
 echo "query length"
 {

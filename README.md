@@ -110,6 +110,8 @@ cat sql/02_median_agg.sql sql/03_gini.sql sql/04_mode_agg.sql sql/05_wpercentile
 
 Or load only the one you need. `sql/01_served_airports.sql` is the openflights view, so leave it out. The functions use `JSON_TABLE`, so they need MariaDB 10.6 or newer. We tested them on 12.3.3 only.
 
+If the server has binary logging on, which replication and point-in-time backups need, the user who loads the functions needs the SUPER privilege. Without it MariaDB stops with `ERROR 1419`, until an admin sets `log_bin_trust_function_creators = 1`. The functions are declared `DETERMINISTIC`, because without it the server refuses them even for root ([experiments/11](experiments/11_binary_log.sh)).
+
 ## How it works
 
 MariaDB hands a stored aggregate one row at a time. All four functions follow the same pattern: collect the values of the group in a text list, then compute the answer once when the group ends.
@@ -128,7 +130,7 @@ flowchart LR
 This is `median_agg` from [sql/02_median_agg.sql](sql/02_median_agg.sql):
 
 ```sql
-CREATE OR REPLACE AGGREGATE FUNCTION median_agg(x DOUBLE) RETURNS DOUBLE
+CREATE OR REPLACE AGGREGATE FUNCTION median_agg(x DOUBLE) RETURNS DOUBLE DETERMINISTIC
 BEGIN
   DECLARE vals LONGTEXT DEFAULT '';  -- the group's values, comma-separated
   DECLARE n INT DEFAULT 0;           -- how many values so far
@@ -160,6 +162,7 @@ END
 ```
 
 - The handler is written at the top but runs at the end, when `FETCH GROUP NEXT ROW` finds no more rows.
+- `DETERMINISTIC` says the same values always give the same answer. A server with binary logging refuses a function without it.
 - `gini` uses the same loop and keeps a running total. At the end it ranks the values with `ROW_NUMBER()` and applies `G = 2 * SUM(rank * x) / (n * total) - (n + 1) / n`.
 - `mode_agg` wraps each value with `JSON_QUOTE`, so commas and quotes inside a name do not break the list. At the end it groups the values and returns the most common one. Ties go to the smallest value, so the result is always the same.
 - `wpercentile` stores `[value, weight]` pairs instead of single values. At the end it sorts by value, keeps a running total of the weights, and returns the first value where that total reaches `p` times the sum of all weights.
@@ -280,7 +283,7 @@ The first hand-written Gini query and the first `gini` function both returned sl
 
 ## Past the docs: what we tested
 
-The MariaDB docs show how to write a stored aggregate, with a median example, but say little about where it breaks. Each experiment below is a SQL file in [experiments/](experiments/), and its output is saved in [results/](results/). All runs are on MariaDB 12.3.3.
+The MariaDB docs show how to write a stored aggregate, with a median example, but say little about where it breaks. Each experiment below is a file in [experiments/](experiments/), and its output is saved in [results/](results/). All runs are on MariaDB 12.3.3.
 
 ### The docs' median vs ours
 
@@ -312,6 +315,7 @@ The clash is a known server issue: [MDEV-17246](https://jira.mariadb.org/browse/
 | Empty group | returns NULL | Right for a median. A custom count would also return NULL, not 0: [MDEV-24580](https://jira.mariadb.org/browse/MDEV-24580) |
 | Text input, `median_agg(name)` | no, `ERROR 1366` | in strict mode, which is the default |
 | Oracle syntax (`sql_mode=ORACLE`) | yes | The docs' SQL/PL example (`RETURN`, `EXCEPTION WHEN NO_DATA_FOUND`) works. Our functions, created in the default mode, give the same answers when called from an ORACLE-mode session, because each routine keeps the `sql_mode` it was created in ([experiments/10](experiments/10_oracle_mode.sql)) |
+| On a server with binary logging (`--log-bin`) | yes, because they are declared `DETERMINISTIC` | Without it: `ERROR 1418`, even for root. A user without SUPER gets `ERROR 1419` until `log_bin_trust_function_creators = 1` ([experiments/11](experiments/11_binary_log.sh)) |
 | Listing your aggregates | only in `mysql.proc` | `mysql.proc.aggregate` is `GROUP` for a stored aggregate. `information_schema.ROUTINES` has no column for it, so there an aggregate looks like any other function ([experiments/10](experiments/10_oracle_mode.sql)) |
 
 ## Tests
@@ -373,7 +377,7 @@ One timing run first came out negative (the VM clock was corrected while it ran)
 ./run_experiments.sh my-run
 ```
 
-This runs all 10 experiments and saves their output in `my-run/`, next to `results/`, so you can compare. It takes about 10 minutes. Without a folder name it overwrites `results/`. Times change from machine to machine, so compare the ratios: for example `median_agg` against the old JSON version, or `mode_agg` against the `ROW_NUMBER()` query.
+This runs all 11 experiments and saves their output in `my-run/`, next to `results/`, so you can compare. It takes about 10 minutes. Without a folder name it overwrites `results/`. Times change from machine to machine, so compare the ratios: for example `median_agg` against the old JSON version, or `mode_agg` against the `ROW_NUMBER()` query.
 
 A full rerun on the Intel Mac on 16 Oct 2026 is saved in [results/rerun-2026-10-16/](results/rerun-2026-10-16/). The milliseconds moved a little, the findings did not:
 
@@ -433,7 +437,7 @@ Team IV, Capstone Project I (CAP-01), Constructor University, fall 2026.
 
 | Who | GitHub | Did |
 |---|---|---|
-| Ayoub Labrinssi | [@ayoublabrinssi](https://github.com/ayoublabrinssi) | `median_agg`, `gini`, `mode_agg`, setup and scripts, experiments 1 to 6, 9 and 10, README |
+| Ayoub Labrinssi | [@ayoublabrinssi](https://github.com/ayoublabrinssi) | `median_agg`, `gini`, `mode_agg`, setup and scripts, experiments 1 to 6 and 9 to 11, README |
 | Shreyash Hadiya | [@Shreyashahir](https://github.com/Shreyashahir) | `wpercentile`, its 14 tests, experiments 7 and 8 |
 
 Every change went through a branch and a pull request. Who did what each week is in [SELF-ASSESSMENT.md](SELF-ASSESSMENT.md), and every AI use is in [AI-log.md](AI-log.md).

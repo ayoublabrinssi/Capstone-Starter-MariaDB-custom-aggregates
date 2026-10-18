@@ -6,10 +6,13 @@
 --
 -- Same pattern as median_agg. JSON_QUOTE keeps commas and quotes inside a
 -- value from breaking the list.
+--
+-- DETERMINISTIC: the same values always give the same answer. A server with
+-- binary logging refuses a function without it (experiments/11_binary_log.sh).
 
 DELIMITER //
 
-CREATE OR REPLACE AGGREGATE FUNCTION mode_agg(x VARCHAR(255)) RETURNS VARCHAR(255)
+CREATE OR REPLACE AGGREGATE FUNCTION mode_agg(x VARCHAR(255)) RETURNS VARCHAR(255) DETERMINISTIC
 BEGIN
   DECLARE vals LONGTEXT DEFAULT '';  -- the group's values, quoted and comma-separated
   DECLARE n INT DEFAULT 0;           -- how many values so far
