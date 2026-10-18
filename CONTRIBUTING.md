@@ -35,6 +35,8 @@ scripts/test.sh
 3. Run `scripts/install.sh` and `scripts/test.sh`. All tests must pass.
 4. Open a pull request that links the issue.
 
+Files use two spaces, LF line endings and end with a newline. `.editorconfig` sets this up in most editors.
+
 ## Add a new aggregate
 - Put it in `sql/` with the next number, e.g. `sql/06_percentile_agg.sql`.
 - Start the file with a comment: what it returns, how NULLs, empty groups and ties are handled.
