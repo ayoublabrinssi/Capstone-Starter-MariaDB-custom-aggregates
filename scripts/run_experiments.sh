@@ -36,6 +36,8 @@ run 07_wpercentile_timing -t
 run 08_wpercentile_vs_builtin -t
 run 09_before_after -t
 run 10_oracle_mode -t -v
+run 12_docs_mode --force -t -v
+run 13_having_bug --force -t -v
 
 # Experiment 11 starts its own server, with binary logging on.
 echo "experiment 11_binary_log"

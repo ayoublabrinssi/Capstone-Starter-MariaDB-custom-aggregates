@@ -41,6 +41,7 @@ When the code changes, this log is updated so it still matches. New entries go a
 | 14 | 18 Oct | Check my teammate's PR #6, then find what could still raise the score before merging | The evaluation prompt run again on the polish branch (36/40) and a draft email to the supervisor (both outside the repo). In the repo: a duplicate heading in `docs/SELF-ASSESSMENT.md` removed, the functions declared `DETERMINISTIC` so they install on a server with binary logging, experiment 11 and a CI step for it, experiment 4 without dynamic SQL | Merged PR #6 myself. Chose to add both fixes before merging. Branch `polish/after-evaluation`, PR #7 |
 | 15 | 18 Oct | A more professional, well organized repo that respects clean code | Scripts in `scripts/`, the AI log and self-assessment in `docs/`, one folder per function in `queries/`, `tests/edge_cases.sql`, `.editorconfig` and `.gitattributes` (spaces, LF line endings, final newline), a shellcheck step in CI, every link and command updated | Chose the full reorganization over a small tidy-up. Branch `refactor/repo-layout`, PR #8 |
 | 16 | 18 Oct | Everything in one merge and the old branches gone, then a fresh read of the repo and what is left to fix | The 7 merged branches removed on GitHub and locally, my hours and the two-person team in `docs/SELF-ASSESSMENT.md`, PR numbers next to the branch names in this log, a suggested GitHub description and topics | Set my hours for 12 to 18 Oct to 10 and the team to Shreyash and me. Asked for one polish commit merged to main. Set the description and topics on GitHub myself |
+| 17 | 6 Nov | The two things MariaDB's review (40 of 40) suggested: report the `HAVING` error in Jira, and test the docs' temporary-table approach against `mode_agg` | A Jira report with a 3-row reproduction, checked on MariaDB 10.3 to 13.0, and a Jira search. Experiment 13, the reproduction, which also found a wrong result with no error. Experiment 12, `mode_tmp` (the docs' way) against `mode_agg` and the query by hand. README updates | Chose to do both. Posted the report to Jira from my own account (MDEV-42107). Chose to keep `mode_agg` as it is and to add the results. Branch `review-followups` |
 
 ## Prompts
 
@@ -315,6 +316,27 @@ Output:
 
 What I did and checked myself:
 - Set my hours to 10 and the team to Shreyash and me. Asked for one polish commit merged to main. Set the description and topics on GitHub myself.
+
+### 17. MariaDB's review: the HAVING bug and the docs' way for mode
+
+- Date: 2026-11-06 (Morocco)
+- Input: MariaDB's review of this repo (40 of 40) and this repository
+
+> Here is the MariaDB feedback. (pasted: 40 of 40, "Please file it with your reproduction at https://jira.mariadb.org", and "test the documentation's temporary-table approach against it")
+
+> Both.
+
+Output:
+- The `HAVING` error cut down to a 3-row table. On the way it found a worse case: if the column is also in the select list, there is no error but a wrong result, because the function gets the first row's value for every row of the group. Same on MariaDB 10.3.39, 10.6.28, 10.11.19, 11.4.13, 11.8.9, 12.3.3 and 13.0.2 (official Docker images).
+- A search of MariaDB Jira: no issue for this. The closest, MDEV-14213, is about a plain stored function in `HAVING`.
+- A Jira report (summary, steps, expected and actual result, workarounds) for me to post. The same reproduction is experiment 13, `experiments/13_having_bug.sql`.
+- Experiment 12, `experiments/12_docs_mode.sql`: `mode_tmp`, written the docs' way with a temporary table, against `mode_agg` and the query by hand, 10 runs each, on a cloud VM.
+- README: the `HAVING` row, a new section "The docs' way for `mode_agg`", and both experiments in `scripts/run_experiments.sh`.
+
+What I did and checked myself:
+- Chose to do both.
+- Posted the report to MariaDB Jira from my own account: MDEV-42107.
+- Chose to keep `mode_agg` as it is.
 
 ## Adding a new entry
 
