@@ -1,0 +1,140 @@
+ERROR 1054 (42S22) at line 32: Unknown column 'v' in 'HAVING'
+--------------
+CREATE DATABASE IF NOT EXISTS having_bug
+--------------
+
+--------------
+CREATE OR REPLACE TABLE t (g INT, v INT)
+--------------
+
+--------------
+INSERT INTO t VALUES (1, 10), (1, 20), (2, 5)
+--------------
+
+--------------
+CREATE OR REPLACE AGGREGATE FUNCTION my_sum(x INT) RETURNS INT
+BEGIN
+  DECLARE s INT DEFAULT 0;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND RETURN s;
+  LOOP
+    FETCH GROUP NEXT ROW;
+    SET s = s + x;
+  END LOOP;
+END
+--------------
+
+--------------
+SELECT g, my_sum(v) FROM t GROUP BY g
+--------------
+
++------+-----------+
+| g    | my_sum(v) |
++------+-----------+
+|    1 |        30 |
+|    2 |         5 |
++------+-----------+
+--------------
+SELECT g FROM t GROUP BY g HAVING SUM(v) > 25
+--------------
+
++------+
+| g    |
++------+
+|    1 |
++------+
+--------------
+SELECT g FROM t GROUP BY g HAVING my_sum(v) > 25
+--------------
+
+--------------
+SELECT g, v FROM t GROUP BY g HAVING my_sum(v) > 25
+--------------
+
+--------------
+SELECT g, v FROM t GROUP BY g HAVING my_sum(v) = 20
+--------------
+
++------+------+
+| g    | v    |
++------+------+
+|    1 |   10 |
++------+------+
+--------------
+CREATE OR REPLACE AGGREGATE FUNCTION my_sum_trace(x INT) RETURNS INT
+BEGIN
+  DECLARE s INT DEFAULT 0;
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+    BEGIN
+      SET @seen = CONCAT(@seen, '= ', s, '; ');
+      RETURN s;
+    END;
+  LOOP
+    FETCH GROUP NEXT ROW;
+    SET @seen = CONCAT(@seen, x, ' ');
+    SET s = s + x;
+  END LOOP;
+END
+--------------
+
+--------------
+SET @seen = ''
+--------------
+
+--------------
+SELECT g, my_sum_trace(v) FROM t GROUP BY g
+--------------
+
++------+-----------------+
+| g    | my_sum_trace(v) |
++------+-----------------+
+|    1 |              30 |
+|    2 |               5 |
++------+-----------------+
+--------------
+SELECT @seen AS in_select_list
+--------------
+
++---------------------+
+| in_select_list      |
++---------------------+
+| 10 20 = 30; 5 = 5;  |
++---------------------+
+--------------
+SET @seen = ''
+--------------
+
+--------------
+SELECT g, v FROM t GROUP BY g HAVING my_sum_trace(v) > 25
+--------------
+
+--------------
+SELECT @seen AS in_having
+--------------
+
++---------------------+
+| in_having           |
++---------------------+
+| 10 10 = 20; 5 = 5;  |
++---------------------+
+--------------
+SELECT g, my_sum(v) AS s FROM t GROUP BY g HAVING s > 25
+--------------
+
++------+------+
+| g    | s    |
++------+------+
+|    1 |   30 |
++------+------+
+--------------
+SELECT g FROM (SELECT g, my_sum(v) AS s FROM t GROUP BY g) AS d WHERE s > 25
+--------------
+
++------+
+| g    |
++------+
+|    1 |
++------+
+--------------
+DROP DATABASE having_bug
+--------------
+

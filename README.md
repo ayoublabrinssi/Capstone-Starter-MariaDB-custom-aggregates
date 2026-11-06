@@ -300,13 +300,30 @@ The docs' example (`medi_int`, copied as written in [experiments/01_docs_median.
 
 The clash is a known server issue: [MDEV-17246](https://jira.mariadb.org/browse/MDEV-17246) "Stored Functions need their own temporary table namespace" (open). So the docs' version is faster on big groups but cannot be used twice in one query. Ours is safe to combine, but slower on big groups (see [Speed](#speed)).
 
+### The docs' way for `mode_agg`
+
+MariaDB's review of this repo asked us to test the docs' temporary-table approach against `mode_agg`. `mode_tmp` in [experiments/12_docs_mode.sql](experiments/12_docs_mode.sql) is `mode_agg` written like `medi_int`: one `INSERT` into a temporary table `tt` per row, then a `GROUP BY` on `tt` at the end. Same query as experiment 6 (top airline per country, 67,663 routes), 10 runs each ([results/12_docs_mode.txt](results/12_docs_mode.txt)):
+
+| Version | Time, median (fastest to slowest) | Two calls in one SELECT |
+|---|---|---|
+| `ROW_NUMBER()` by hand | 167 ms (145 to 177) | works |
+| `mode_tmp`, temporary table | 764 ms (612 to 851) | `ERROR 1050 Table 'tt' already exists` |
+| `mode_agg`, text list | 2,130 ms (1,827 to 2,260) | works |
+
+- **The docs' way is 2.8 times faster than `mode_agg`** and names the same airline for every country. An `INSERT` costs the same for every row, while our text list is copied as it grows.
+- **It is still 4.6 times slower than the query by hand.**
+- **It cannot be called twice in one query**, the same clash as `medi_int`. Dropping `tt` at the start does not fix it: the second call then fails with `ERROR 1146 Table 'tt' doesn't exist`, because the first call drops `tt` when its group ends.
+- **We kept `mode_agg` as it is.** Slower on big groups is a better trade than a function that fails when used twice in one query.
+
+These runs were on a Linux cloud VM (4 vCPU Intel Xeon 2.1 GHz, 16 GB RAM) with Docker, not the Intel Mac. `mode_agg` against the query by hand is 12.7 times slower here and 12 times on the Mac (experiment 6), so the milliseconds change but the order does not.
+
 ### What works and what does not
 
 | Use | Works? | Notes |
 |---|---|---|
 | As a window function, `median_agg(x) OVER (...)` | no, `ERROR 1064` | Stored aggregates cannot be window functions. Tracked in [MDEV-11263](https://jira.mariadb.org/browse/MDEV-11263) (stalled). Use the built-in `MEDIAN() OVER` instead. |
 | `median_agg(DISTINCT x)` | no, `ERROR 1064` | Workaround: `SELECT median_agg(r) FROM (SELECT DISTINCT routes AS r ...) d` |
-| In `HAVING`, e.g. `HAVING gini(routes) > 0.8` | no, `ERROR 1054 Unknown column 'routes' in 'HAVING'` | Built-in `SUM` and `AVG` work there. Same error on a plain table with 2 columns. Workarounds: use the alias (`HAVING g > 0.8`) or a derived table. We found no JIRA issue for this (searched 11 Oct 2026). |
+| In `HAVING`, e.g. `HAVING gini(routes) > 0.8` | no, `ERROR 1054 Unknown column 'routes' in 'HAVING'`, or a wrong result | If the column is also in the select list there is no error, but the function gets the first row's value for every row of the group. On a 3-row table, `HAVING my_sum(v) > 25` misses the group whose sum is 30 ([experiments/13](experiments/13_having_bug.sql)). Built-in `SUM` and `AVG` work there. Same on MariaDB 10.3 to 13.0. Workarounds: use the alias (`HAVING g > 0.8`) or a derived table. Reported as [MDEV-42107](https://jira.mariadb.org/browse/MDEV-42107). |
 | In `ORDER BY` | yes | |
 | `WITH ROLLUP` | yes | Germany 22.5, Morocco 11, total 18 |
 | Two custom aggregates in one SELECT | yes | |
@@ -364,7 +381,7 @@ What this shows:
 - **Our first version was very slow on big groups.** It used `JSON_ARRAY_APPEND` for every row, which reads and copies the whole array each time: 10 s for 10,000 rows. Keeping the values in a plain text list and reading it as JSON once at the end gives the same results 17 times faster (614 ms). The old version is kept in [experiments/05_faster_median.sql](experiments/05_faster_median.sql) and checked against the new one.
 - **The cost still grows faster than the group.** Doubling the rows from 10,000 to 20,000 makes `median_agg` about 3.6 times slower, because the text list is copied as it grows. The docs' temp-table version grows in line with the rows.
 - **On one big group, the built-in is far faster.** `MEDIAN() OVER` is about 125 times faster than `median_agg` at 20,000 rows. On many small groups the gap is small and can even turn around (experiment 8, below).
-- **`mode_agg` hits the same wall on real data.** Top airline per country over all 67,663 routes takes 5.2 s with `mode_agg` and 0.44 s with the hand-written `ROW_NUMBER()` query (10 runs, [results/06_mode_timing.txt](results/06_mode_timing.txt)). Most of that time is the US group, which has 13,056 routes.
+- **`mode_agg` hits the same wall on real data.** Top airline per country over all 67,663 routes takes 5.2 s with `mode_agg` and 0.44 s with the hand-written `ROW_NUMBER()` query (10 runs, [results/06_mode_timing.txt](results/06_mode_timing.txt)). Most of that time is the US group, which has 13,056 routes. Written the docs' way, with a temporary table, it is 2.8 times faster but cannot be used twice in one query ([experiment 12](#the-docs-way-for-mode_agg)).
 - **`wpercentile` is close to the window-function query on small groups, about twice as slow on big ones.** Route-weighted median per country on the 3,211 airports: 236 ms against 192 ms. The same median with one row per route (67,663 rows, US group 13,056): 1.7 s against 0.82 s, because of the same growing text list. Both versions give the same answer for every country. 10 runs each, on a Windows laptop (Ryzen 5 5500U, 8 GB RAM) with Docker Desktop, [experiments/07_wpercentile_timing.sql](experiments/07_wpercentile_timing.sql), output in [results/07_wpercentile_timing.txt](results/07_wpercentile_timing.txt).
 - **Against the built-in, there is no clear winner in a GROUP BY query.** MariaDB has no built-in weighted percentile, but with every weight = 1 `wpercentile(x, 1, p)` gives the same answer as the built-in `PERCENTILE_DISC(p)` (0 differences for every country). 90th percentile per country: 211 ms against 247 ms on the 3,211 airports, 1.7 s against 1.8 s on the 67,663 routes. The built-in is only a window function, so it computes a value for every row and needs `DISTINCT` to fold them back to one per country, and most of the time goes into the view and the join, which both pay. This does not mean the custom aggregate is faster in general: on one large group of plain numbers the built-in `MEDIAN()` is about 125 times faster (experiment 4). 10 runs each, [experiments/08_wpercentile_vs_builtin.sql](experiments/08_wpercentile_vs_builtin.sql), output in [results/08_wpercentile_vs_builtin.txt](results/08_wpercentile_vs_builtin.txt).
 - **On openflights the median and Gini are fast enough.** The biggest group is the US with 550 airports, and `median_agg` plus `gini` over all 225 countries take about 0.5 s.
@@ -377,7 +394,7 @@ One timing run first came out negative (the VM clock was corrected while it ran)
 scripts/run_experiments.sh my-run
 ```
 
-This runs all 11 experiments and saves their output in `my-run/`, next to `results/`, so you can compare. It takes about 10 minutes. Without a folder name it overwrites `results/`. Times change from machine to machine, so compare the ratios: for example `median_agg` against the old JSON version, or `mode_agg` against the `ROW_NUMBER()` query.
+This runs all 13 experiments and saves their output in `my-run/`, next to `results/`, so you can compare. It takes about 10 minutes. Without a folder name it overwrites `results/`. Times change from machine to machine, so compare the ratios: for example `median_agg` against the old JSON version, or `mode_agg` against the `ROW_NUMBER()` query.
 
 A full rerun on the Intel Mac on 16 Oct 2026 is saved in [results/rerun-2026-10-16/](results/rerun-2026-10-16/). The milliseconds moved a little, the findings did not:
 
@@ -389,7 +406,7 @@ A full rerun on the Intel Mac on 16 Oct 2026 is saved in [results/rerun-2026-10-
 
 - **When a built-in does the job.** For a median use `MEDIAN()` or `PERCENTILE_CONT()` as window functions. They are far faster.
 - **On big groups**, with tens of thousands of rows in one group. A stored aggregate that keeps every value gets slow. Pre-aggregate, or use a built-in.
-- **When you need it as a window function, with DISTINCT, or directly in HAVING.** None of these work (see the table above).
+- **When you need it as a window function, with DISTINCT, or directly in HAVING.** None of these work (see the table above). In `HAVING` it can even return a wrong result with no error.
 - **When the function needs a temporary table** and may be called twice in one query. Keep state in variables instead.
 
 Use one when there is no built-in (like Gini), when the formula is easy to get wrong by hand (see the DECIMAL trap above), and when the same logic is reused in many queries.
@@ -433,7 +450,7 @@ Team IV, Capstone Project I (CAP-01), Constructor University, fall 2026.
 
 | Who | GitHub | Did |
 |---|---|---|
-| Ayoub Labrinssi | [@ayoublabrinssi](https://github.com/ayoublabrinssi) | `median_agg`, `gini`, `mode_agg`, setup and scripts, experiments 1 to 6 and 9 to 11, README |
+| Ayoub Labrinssi | [@ayoublabrinssi](https://github.com/ayoublabrinssi) | `median_agg`, `gini`, `mode_agg`, setup and scripts, experiments 1 to 6 and 9 to 13, README |
 | Shreyash Hadiya | [@Shreyashahir](https://github.com/Shreyashahir) | `wpercentile`, its 14 tests, experiments 7 and 8 |
 
 Every change went through a branch and, except for small documentation fixes, a pull request. Who did what each week is in [docs/SELF-ASSESSMENT.md](docs/SELF-ASSESSMENT.md), and every AI use is in [docs/AI-log.md](docs/AI-log.md).

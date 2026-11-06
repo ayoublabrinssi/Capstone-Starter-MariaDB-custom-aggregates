@@ -1,0 +1,153 @@
+ERROR 1050 (42S01) at line 40: Table 'tt' already exists
+ERROR 1146 (42S02) at line 69: Table 'flightdb2.tt' doesn't exist
+--------------
+CREATE OR REPLACE AGGREGATE FUNCTION mode_tmp(x VARCHAR(255)) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+    BEGIN
+      DECLARE res VARCHAR(255);
+      SET res = (SELECT a FROM tt GROUP BY a ORDER BY COUNT(*) DESC, a LIMIT 1);
+      DROP TEMPORARY TABLE tt;
+      RETURN res;
+    END;
+  CREATE TEMPORARY TABLE tt (a VARCHAR(255));
+  LOOP
+    FETCH GROUP NEXT ROW;
+    IF x IS NOT NULL THEN
+      INSERT INTO tt VALUES (x);
+    END IF;
+  END LOOP;
+END
+--------------
+
+--------------
+SELECT COUNT(*) AS countries_that_differ
+FROM (SELECT ap.country, mode_agg(al.name) AS a, mode_tmp(al.name) AS b
+      FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+      JOIN airlines al ON al.alid = r.alid
+      GROUP BY ap.country) AS x
+WHERE NOT (a <=> b)
+--------------
+
++-----------------------+
+| countries_that_differ |
++-----------------------+
+|                     0 |
++-----------------------+
+--------------
+SELECT ap.country, mode_tmp(al.name) AS top_airline, mode_tmp(r.equipment) AS top_plane
+FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+JOIN airlines al ON al.alid = r.alid
+WHERE ap.country = 'Morocco'
+GROUP BY ap.country
+--------------
+
+--------------
+CREATE OR REPLACE AGGREGATE FUNCTION mode_tmp2(x VARCHAR(255)) RETURNS VARCHAR(255) DETERMINISTIC
+BEGIN
+  DECLARE CONTINUE HANDLER FOR NOT FOUND
+    BEGIN
+      DECLARE res VARCHAR(255);
+      SET res = (SELECT a FROM tt GROUP BY a ORDER BY COUNT(*) DESC, a LIMIT 1);
+      DROP TEMPORARY TABLE tt;
+      RETURN res;
+    END;
+  DROP TEMPORARY TABLE IF EXISTS tt;
+  CREATE TEMPORARY TABLE tt (a VARCHAR(255));
+  LOOP
+    FETCH GROUP NEXT ROW;
+    IF x IS NOT NULL THEN
+      INSERT INTO tt VALUES (x);
+    END IF;
+  END LOOP;
+END
+--------------
+
+--------------
+SELECT ap.country, mode_tmp2(al.name) AS top_airline, mode_tmp2(r.equipment) AS top_plane
+FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+JOIN airlines al ON al.alid = r.alid
+WHERE ap.country = 'Morocco'
+GROUP BY ap.country
+--------------
+
+--------------
+SELECT ap.country, mode_agg(al.name) AS top_airline, mode_agg(r.equipment) AS top_plane
+FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+JOIN airlines al ON al.alid = r.alid
+WHERE ap.country = 'Morocco'
+GROUP BY ap.country
+--------------
+
++---------+-----------------+-----------+
+| country | top_airline     | top_plane |
++---------+-----------------+-----------+
+| Morocco | Royal Air Maroc | 738       |
++---------+-----------------+-----------+
+--------------
+DROP TEMPORARY TABLE IF EXISTS tt
+--------------
+
+--------------
+CREATE TABLE IF NOT EXISTS docs_mode_bench (method VARCHAR(30), run INT, ms DOUBLE)
+--------------
+
+--------------
+TRUNCATE docs_mode_bench
+--------------
+
+--------------
+CREATE OR REPLACE PROCEDURE run_docs_mode_bench(p_runs INT)
+BEGIN
+  DECLARE i INT DEFAULT 1;
+  DECLARE t0 DATETIME(6);
+  DECLARE c INT;
+  WHILE i <= p_runs DO
+    SET t0 = NOW(6);
+    SELECT COUNT(*) INTO c FROM (
+      SELECT ap.country, mode_agg(al.name) AS top_airline
+      FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+      JOIN airlines al ON al.alid = r.alid
+      GROUP BY ap.country) AS x;
+    INSERT INTO docs_mode_bench VALUES ('mode_agg (text list)', i, TIMESTAMPDIFF(MICROSECOND, t0, NOW(6)) / 1000);
+
+    SET t0 = NOW(6);
+    SELECT COUNT(*) INTO c FROM (
+      SELECT ap.country, mode_tmp(al.name) AS top_airline
+      FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+      JOIN airlines al ON al.alid = r.alid
+      GROUP BY ap.country) AS x;
+    INSERT INTO docs_mode_bench VALUES ('mode_tmp (temp table)', i, TIMESTAMPDIFF(MICROSECOND, t0, NOW(6)) / 1000);
+
+    SET t0 = NOW(6);
+    SELECT COUNT(*) INTO c FROM (
+      SELECT country, airline FROM (
+        SELECT ap.country, al.name AS airline,
+               ROW_NUMBER() OVER (PARTITION BY ap.country ORDER BY COUNT(*) DESC, al.name) AS rn
+        FROM routes r JOIN airports ap ON ap.apid = r.src_apid
+        JOIN airlines al ON al.alid = r.alid
+        GROUP BY ap.country, al.name) AS ranked
+      WHERE rn = 1) AS x;
+    INSERT INTO docs_mode_bench VALUES ('ROW_NUMBER() by hand', i, TIMESTAMPDIFF(MICROSECOND, t0, NOW(6)) / 1000);
+    SET i = i + 1;
+  END WHILE;
+END
+--------------
+
+--------------
+CALL run_docs_mode_bench(10)
+--------------
+
+--------------
+SELECT method, COUNT(*) AS runs, ROUND(median_agg(ms), 1) AS median_ms,
+       ROUND(MIN(ms), 1) AS min_ms, ROUND(MAX(ms), 1) AS max_ms
+FROM docs_mode_bench GROUP BY method ORDER BY median_ms
+--------------
+
++-----------------------+------+-----------+--------+--------+
+| method                | runs | median_ms | min_ms | max_ms |
++-----------------------+------+-----------+--------+--------+
+| ROW_NUMBER() by hand  |   10 |     167.3 |  144.9 |  177.1 |
+| mode_tmp (temp table) |   10 |     763.9 |  612.3 |  850.5 |
+| mode_agg (text list)  |   10 |    2129.9 | 1826.8 | 2260.3 |
++-----------------------+------+-----------+--------+--------+
